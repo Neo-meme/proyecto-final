@@ -1,3 +1,5 @@
+package src.menu;
+
 import java.awt.Dimension;
 import java.awt.Color;
 import javax.swing.JPanel;
