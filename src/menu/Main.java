@@ -12,8 +12,10 @@ public class Main{
         GamePanel gamePanel = new GamePanel();
         window.add(gamePanel);
         window.pack();
-        
         window.setLocationRelativeTo(null);
         window.setVisible(true);
+
+        gamePanel.requestFocusInWindow(); // Asegura que el panel reciba el foco para detectar el teclado
+        gamePanel.startGameThread(); // arranca el loop DESPUÉS de que la ventana sea visible
     }
 }

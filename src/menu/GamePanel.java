@@ -1,11 +1,16 @@
 package src.menu;
 
+import src.collision.CollisionChecker;
+import src.entity.Pacman;
+import src.input.KeyHandler;
+import src.tile.TileManager;
+
 import java.awt.Dimension;
 import java.awt.Color;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import src.input.KeyHandler;
+
 
 public class GamePanel extends JPanel implements Runnable {
 
@@ -14,11 +19,11 @@ public class GamePanel extends JPanel implements Runnable {
     final int originalTileSize =16;     // 16*16 tamaño base del tile en pixeles 
     final int scale =3;                // factor de escala
 
-    final int tileSize = originalTileSize * scale; // 48*48 px por tile
-    final int maxScreenCol = 16; 
-    final int maxScreenRow = 12;
-    final int ScreenWidth = tileSize * maxScreenCol; // 768 pixeles 
-    final int ScreenHeight = tileSize * maxScreenRow; // 576 pixeles
+    public final int tileSize = originalTileSize * scale; // 48*48 px por tile
+    public final int maxScreenCol = 16; 
+    public final int maxScreenRow = 12;
+    public final int ScreenWidth = tileSize * maxScreenCol; // 768 pixeles 
+    public  final int ScreenHeight = tileSize * maxScreenRow; // 576 pixeles
 
     // --------------------- fin de configuracion de pantalla ---------------------
 
@@ -28,15 +33,20 @@ public class GamePanel extends JPanel implements Runnable {
     //----------- fin de configuracion del loop -----------
 
     // ------------- input de movimiento -------------
-        KeyHandler keyH = new KeyHandler();
+    public KeyHandler keyH  = new KeyHandler();
+    public Pacman pacman = new Pacman(this, keyH);
+    public TileManager tileM  = new TileManager(this);
+    public CollisionChecker cManager = new CollisionChecker(this);
     // ------------- fin de input de movimiento -------------
 
 
     //---------------------- constructor ---------------------
     public GamePanel(){
         this.setPreferredSize (new Dimension(ScreenWidth,ScreenHeight));
-        this.setBackground(Color.blue);
+        this.setBackground(Color.black);
         this.setDoubleBuffered(true);
+        this.addKeyListener(keyH);
+        this.setFocusable(true);
     }
     //---------------------- fin de constructor ---------------------
 
@@ -78,7 +88,7 @@ public class GamePanel extends JPanel implements Runnable {
 
     // ── Lógica del juego (se llenará después) ─────────────────────
     public void update() {
-        // aquí irá: mover Pac-Man, detectar colisiones, etc.
+        pacman.update(); // actualizar la lógica
     }
 
     // ── Renderizado ───────────────────────────────────────────────
@@ -87,7 +97,9 @@ public class GamePanel extends JPanel implements Runnable {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
 
-        // aquí irá: dibujar mapa, Pac-Man, HUD, etc.
+        tileM.draw(g2); // dibujar el mapa
+
+        pacman.draw(g2); // dibujar a Pacman
 
         g2.dispose(); // libera recursos del objeto gráfico
     }
