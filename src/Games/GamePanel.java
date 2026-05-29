@@ -1,4 +1,4 @@
-package src.menu;
+package src.Games;
 
 import src.collision.CollisionChecker;
 import src.entity.Pacman;
@@ -17,13 +17,13 @@ public class GamePanel extends JPanel implements Runnable {
     //--------------------- configuracion de pantalla ---------------------
 
     final int originalTileSize =16;     // 16*16 tamaño base del tile en pixeles 
-    final int scale =3;                // factor de escala
+    final int scale =2;                // factor de escala
 
     public final int tileSize = originalTileSize * scale; // 48*48 px por tile
-    public final int maxScreenCol = 16; 
-    public final int maxScreenRow = 12;
-    public final int ScreenWidth = tileSize * maxScreenCol; // 768 pixeles 
-    public  final int ScreenHeight = tileSize * maxScreenRow; // 576 pixeles
+    public final int maxScreenCol = 37; // 37 * 32 = 1184px (~1200)
+    public final int maxScreenRow = 23; // 23 * 32 = 736px
+    public final int ScreenWidth = tileSize * maxScreenCol; // 1184px
+    public  final int ScreenHeight = tileSize * maxScreenRow; // 736px
 
     // --------------------- fin de configuracion de pantalla ---------------------
 

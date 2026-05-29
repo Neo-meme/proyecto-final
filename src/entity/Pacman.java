@@ -1,7 +1,7 @@
 package src.entity;
 
 import src.input.KeyHandler;
-import src.menu.GamePanel;
+import src.Games.GamePanel;
 
 import java.awt.Graphics2D;
 import java.awt.Color;
@@ -31,8 +31,8 @@ public class Pacman extends Entity {
     // ----- posicion y velocidad iniciales -----
     @Override
     public void setDefaultValues() {
-        x = gp.tileSize * 7; // Posición inicial en el centro del mapa
-        y = gp.tileSize * 6;
+        x = gp.tileSize * 18; // Posición inicial en el centro del mapa
+        y = gp.tileSize * 11;
         speed = 3; // Velocidad de movimiento
         direction = "arriba"; // Dirección inicial
     }

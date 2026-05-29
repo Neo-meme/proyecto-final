@@ -1,7 +1,7 @@
 package src.collision;
 
 import src.entity.Entity;
-import src.menu.GamePanel;
+import src.Games.GamePanel;
 
 public class CollisionChecker{
     GamePanel gp;
