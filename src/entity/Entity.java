@@ -9,6 +9,8 @@ public abstract class Entity {
     public int speed; // velocidad de movimiento del personaje
     public String direction= "arriba"; // direccion en la que se esta moviendo el personaje
 
+    public int score = 0; // puntuacion del jugador, se incrementa al comer pellets
+
     public BufferedImage up1, up2, down1, down2, left1, left2, right1, right2; // imagenes del personaje para cada direccion
 
     public int spriteCounter = 0; // contador para cambiar de imagen cada cierto tiempo

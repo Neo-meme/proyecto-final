@@ -9,14 +9,13 @@ public class MenuPrincipal extends JFrame {
          // Configuraciones de la ventana usando "this" (porque esta clase ya es la ventana) 
         this.setTitle("Strawus"); // Asignamos el título de la ventana superior
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Para que el programa cierre al darle a la X
-        this.setResizable(false); // Para que el usuario no pueda cambiar el tamaño de la ventana
         this.setLocationRelativeTo(null); // Esto centra la ventana en la pantalla del usuario
 
         //Instanciamos el panel 
         PanelPrincipal PanelPrincipal = new PanelPrincipal(Controlador);
         this.CambiarPantalla(PanelPrincipal);
 
-        this.setSize(1200, 800);
+        this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
@@ -32,10 +31,15 @@ public class MenuPrincipal extends JFrame {
             //3. Utilizamos el repaint para actualizar la ventana y mostrar el nuevo panel
             this.revalidate();
             this.repaint();
-
+            this.pack();                          // ventana se ajusta al nuevo panel
+            this.setLocationRelativeTo(null);
             //4. Se le da el foco al nuevo panel para que pueda detectar el teclado y mouse
             NuevaPantalla.requestFocus();
-        
-        
+
+        }
+
+        public void ajustarTamanio(int ancho, int alto) {
+            this.setSize(ancho, alto);
+            this.setLocationRelativeTo(null); // recentrar
         }
 }

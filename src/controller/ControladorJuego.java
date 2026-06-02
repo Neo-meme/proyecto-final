@@ -1,9 +1,11 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.SwingUtilities;
 
 public class ControladorJuego implements ActionListener{
         private MenuPrincipal ventanaPrincipal ;
         private VistaJuego vistaJuego ;
+
         public ControladorJuego(MenuPrincipal ventanaPrincipal){
                 this.ventanaPrincipal = ventanaPrincipal;
         }
@@ -14,7 +16,11 @@ public class ControladorJuego implements ActionListener{
 
             //Le ordenamos a la ventana principal el cambio de pantalla a la vista del juego
             ventanaPrincipal.CambiarPantalla(vistaJuego);
-            vistaJuego.iniciarJuego(); // arranca el game loop
+            // Esperar a que Swing termine de renderizar antes de ajustar y arrancar
+            SwingUtilities.invokeLater(() -> {
+                ventanaPrincipal.ajustarTamanio(768 + 16, 576 + 39);
+                vistaJuego.iniciarJuego(); // arranca el juego después de ajustar el tamaño para evitar problemas de renderizado
+            });
         }
 
             @Override
@@ -28,6 +34,7 @@ public class ControladorJuego implements ActionListener{
                         ControladorMenu nuevoControladorMenu = new ControladorMenu();
                         PanelPrincipal panelPrincipal = new PanelPrincipal(nuevoControladorMenu);
                         nuevoControladorMenu.setVistaPrincipal(ventanaPrincipal);
+                        ventanaPrincipal.ajustarTamanio(1200, 800); // restaurar tamaño del menú
                         ventanaPrincipal.CambiarPantalla(panelPrincipal);
                     break;
             }

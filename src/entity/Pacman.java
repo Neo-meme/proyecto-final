@@ -31,10 +31,10 @@ public class Pacman extends Entity {
     // ----- posicion y velocidad iniciales -----
     @Override
     public void setDefaultValues() {
-        x = gp.tileSize * 18; // Posición inicial en el centro del mapa
-        y = gp.tileSize * 11;
-        speed = 3; // Velocidad de movimiento
-        direction = "arriba"; // Dirección inicial
+        x = gp.tileSize * 13; // Posición inicial en el centro del mapa
+        y = gp.tileSize * 23;
+        speed = 2; // Velocidad de movimiento
+        direction = "izquierda"; // Dirección inicial
     }
 
     //---- logica de movimiento y animación -----
@@ -66,6 +66,20 @@ public class Pacman extends Entity {
             spriteCounter = 0;
         }
 
+        // ── Túnel lateral ─────────────────────────────────────────
+        checkTunnel();
+
+    }
+
+    private void checkTunnel() {
+        // Sale por la izquierda → reaparece por la derecha
+        if (x + gp.tileSize < 0) {
+            x = gp.ScreenWidth - gp.tileSize;
+        }
+        // Sale por la derecha → reaparece por la izquierda
+        if (x > gp.ScreenWidth) {
+            x = -gp.tileSize;
+        }
     }
 
     // bibujo del personaje en pantalla

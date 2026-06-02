@@ -9,7 +9,7 @@ import javax.swing.border.EmptyBorder;
 public class PanelPrincipal  extends JPanel {
    public PanelPrincipal(ControladorMenu Controlador) {
 
-        this.setPreferredSize(new Dimension(1200, 800)); 
+        this.setPreferredSize(new Dimension(1200, 800)); // ← primera línea
         this.setLayout(new BorderLayout());
         this.setBackground(Color.decode("#05102E"));
 

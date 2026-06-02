@@ -3,6 +3,7 @@ package src.Games;
 import src.collision.CollisionChecker;
 import src.entity.Pacman;
 import src.input.KeyHandler;
+import src.object.Pellet;
 import src.tile.TileManager;
 
 import java.awt.Dimension;
@@ -20,24 +21,31 @@ public class GamePanel extends JPanel implements Runnable {
     final int scale =2;                // factor de escala
 
     public final int tileSize = originalTileSize * scale; // 48*48 px por tile
-    public final int maxScreenCol = 37; // 37 * 32 = 1184px (~1200)
-    public final int maxScreenRow = 23; // 23 * 32 = 736px
-    public final int ScreenWidth = tileSize * maxScreenCol; // 1184px
-    public  final int ScreenHeight = tileSize * maxScreenRow; // 736px
+    public final int maxScreenCol = 28; // 28 * 32 = 896px
+    public final int maxScreenRow = 31; // 31 * 32 = 992px  (sin HUD)
+    public final int hudHeight    = 48; // espacio para puntaje arriba
+    public final int ScreenWidth = tileSize * maxScreenCol; // 896px
+    public  final int ScreenHeight = tileSize * maxScreenRow; // 992 + 48 = 1040px
 
-    // --------------------- fin de configuracion de pantalla ---------------------
+  
 
     //----------- configuracion del loop -----------
     final int FPS = 60;
     Thread gameThread;
-    //----------- fin de configuracion del loop -----------
+    public int nivelActual = 1; // para cargar el mapa correcto desde TileManager
+  
 
     // ------------- input de movimiento -------------
-    public KeyHandler keyH  = new KeyHandler();
-    public Pacman pacman = new Pacman(this, keyH);
-    public TileManager tileM  = new TileManager(this);
-    public CollisionChecker cManager = new CollisionChecker(this);
-    // ------------- fin de input de movimiento -------------
+    public KeyHandler keyH      = new KeyHandler();
+    public TileManager tileM    = new TileManager(this);       // 1. primero el mapa
+    public CollisionChecker cManager = new CollisionChecker(this); // 2. luego colisiones
+    public Pacman pacman        = new Pacman(this, keyH);      // 3. luego Pac-Man
+
+  
+
+    // ------------- objetos del juego -------------
+    public Pellet[] pellets;
+    public int pelletCount = 0;
 
 
     //---------------------- constructor ---------------------
@@ -47,8 +55,31 @@ public class GamePanel extends JPanel implements Runnable {
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+        setupPellets(); 
     }
-    //---------------------- fin de constructor ---------------------
+    
+    //---------------------- objetos del juego ---------------------
+    private void setupPellets() {
+        // Contar cuántas celdas de suelo hay para crear el arreglo
+        int count = 0;
+        for (int col = 0; col < maxScreenCol; col++) {
+            for (int row = 0; row < maxScreenRow; row++) {
+                if (tileM.mapTileNum[col][row] == 0) count++;
+            }
+        }
+
+        pellets = new Pellet[count];
+        int i = 0;
+        for (int col = 0; col < maxScreenCol; col++) {
+            for (int row = 0; row < maxScreenRow; row++) {
+                if (tileM.mapTileNum[col][row] == 0) {
+                    pellets[i] = new Pellet(col, row, tileSize);
+                    i++;
+                }
+            }
+        }
+        pelletCount = count;
+    }
 
 
     //-------------- arranque del hilo del juego --------------
@@ -56,7 +87,7 @@ public class GamePanel extends JPanel implements Runnable {
         gameThread = new Thread (this);
         gameThread.start();
     }
-    //-------------- fin de arranque del hilo del juego --------------
+  
 
     //--------------  Game loop (se ejecuta en el hilo) --------------
     @Override
@@ -84,11 +115,48 @@ public class GamePanel extends JPanel implements Runnable {
             }
         }
      }
-    //--------------  fin de Game loop (se ejecuta en el hilo) --------------
+   
 
     // ── Lógica del juego (se llenará después) ─────────────────────
     public void update() {
         pacman.update(); // actualizar la lógica
+        checkPelletCollision();
+    }
+
+    private void checkPelletCollision() {
+        for (Pellet pellet : pellets) {
+            if (pellet.visible) {
+                // centro de Pac-Man
+                int pacCenterX = pacman.x + tileSize / 2;
+                int pacCenterY = pacman.y + tileSize / 2;
+
+                // distancia entre centros
+                int pelletCenterX = pellet.x + pellet.size / 2; // corrección: agregar getter o hacer size public
+                int pelletCenterY = pellet.y + pellet.size / 2;
+
+                int dist = (int) Math.sqrt(
+                    Math.pow(pacCenterX - pelletCenterX, 2) +
+                    Math.pow(pacCenterY - pelletCenterY, 2)
+                );
+
+                if (dist < tileSize / 2) {
+                    pellet.visible = false;
+                    pacman.score += 10; // sumar puntos
+                }
+            }
+        }
+
+        // verificar si todos los pellets fueron consumidos
+        boolean todosComidos = true;
+        for (Pellet pellet : pellets) {
+            if (pellet.visible) {
+                todosComidos = false;
+                break;
+            }
+        }
+        if (todosComidos) {
+            cargarSiguienteNivel();
+        }
     }
 
     // ── Renderizado ───────────────────────────────────────────────
@@ -99,9 +167,28 @@ public class GamePanel extends JPanel implements Runnable {
 
         tileM.draw(g2); // dibujar el mapa
 
+        // dibujar pellets
+        for (Pellet pellet : pellets) {
+            pellet.draw(g2);
+        }
+
         pacman.draw(g2); // dibujar a Pacman
 
         g2.dispose(); // libera recursos del objeto gráfico
     }
+
+    private void cargarSiguienteNivel() {
+        if (nivelActual == 1) {
+            nivelActual = 2;
+            tileM.loadMap("nivel2.txt"); // cargará el mapa del nivel 2
+            setupPellets();
+            pacman.setDefaultValues(); // resetear posición
+        } else {
+            // victoria total — por ahora solo imprimimos
+            System.out.println("¡Ganaste todos los niveles!");
+            gameThread = null; // detener el loop
+        }
+    }
+        
 }
 

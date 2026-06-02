@@ -15,7 +15,6 @@ public class VistaJuego extends JPanel {
                 this.setBackground(Color.decode("#201259"));
                 //this.setFocusable(true) funciona para que el panel detecte el teclado
                 this.setFocusable(true); 
-                this.setPreferredSize(new Dimension(1200, 800));
 
                 gamePanel = new GamePanel();
                 this.add(gamePanel, BorderLayout.CENTER);
@@ -23,7 +22,8 @@ public class VistaJuego extends JPanel {
         
         // Método para arrancar el juego desde ControladorJuego
         public void iniciarJuego() {
-                gamePanel.requestFocusInWindow();
+                gamePanel.setFocusable(true);
+                gamePanel.requestFocus();
                 gamePanel.startGameThread();
         }
 
