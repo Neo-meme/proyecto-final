@@ -15,7 +15,6 @@ public class MenuPrincipal extends JFrame {
         PanelPrincipal PanelPrincipal = new PanelPrincipal(Controlador);
         this.CambiarPantalla(PanelPrincipal);
 
-        this.pack();
         this.setLocationRelativeTo(null);
         this.setVisible(true);
     }
@@ -38,8 +37,4 @@ public class MenuPrincipal extends JFrame {
 
         }
 
-        public void ajustarTamanio(int ancho, int alto) {
-            this.setSize(ancho, alto);
-            this.setLocationRelativeTo(null); // recentrar
-        }
 }

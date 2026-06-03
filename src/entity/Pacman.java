@@ -32,7 +32,7 @@ public class Pacman extends Entity {
     @Override
     public void setDefaultValues() {
         x = gp.tileSize * 13; // Posición inicial en el centro del mapa
-        y = gp.tileSize * 23;
+        y = gp.tileSize * 16;
         speed = 2; // Velocidad de movimiento
         direction = "izquierda"; // Dirección inicial
     }
@@ -90,7 +90,7 @@ public class Pacman extends Entity {
         int drawSize = (int)(gp.tileSize * 0.5);
         int offset   = (gp.tileSize - drawSize) / 2;
         int drawX    = x + offset;
-        int drawY    = y + offset;
+        int drawY    = y + offset + gp.hudHeight; // ajustar por espacio del HUD
 
 
         // Temporalmente dibujamos un círculo amarillo

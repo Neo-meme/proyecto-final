@@ -17,6 +17,10 @@ public class VistaJuego extends JPanel {
                 this.setFocusable(true); 
 
                 gamePanel = new GamePanel();
+
+                // VistaJuego toma exactamente el tamaño del GamePanel
+                this.setPreferredSize(new Dimension(gamePanel.ScreenWidth,gamePanel.ScreenHeight));
+
                 this.add(gamePanel, BorderLayout.CENTER);
         } 
         

@@ -15,17 +15,20 @@ public class Pellet {
     public int size;
 
     // ── Constructor ───────────────────────────────────────────────
-    public Pellet(int col, int row, int tileSize) {
+    public Pellet(int col, int row, int tileSize, int hudHeight) {
         this.size = tileSize / 6;                          // pellet pequeño
         this.x = col * tileSize + (tileSize - size) / 2;  // centrado en el tile
         this.y = row * tileSize + (tileSize - size) / 2;
+        this.hudOffset = hudHeight; 
     }
 
+    private int hudOffset;
+    
     // ── Dibujo ────────────────────────────────────────────────────
     public void draw(Graphics2D g2) {
         if (visible) {
             g2.setColor(Color.WHITE);
-            g2.fillOval(x, y, size, size);
+            g2.fillOval(x, y+ hudOffset, size, size);
         }
     }
 }

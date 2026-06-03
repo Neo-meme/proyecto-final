@@ -18,7 +18,6 @@ public class ControladorJuego implements ActionListener{
             ventanaPrincipal.CambiarPantalla(vistaJuego);
             // Esperar a que Swing termine de renderizar antes de ajustar y arrancar
             SwingUtilities.invokeLater(() -> {
-                ventanaPrincipal.ajustarTamanio(768 + 16, 576 + 39);
                 vistaJuego.iniciarJuego(); // arranca el juego después de ajustar el tamaño para evitar problemas de renderizado
             });
         }
@@ -34,7 +33,6 @@ public class ControladorJuego implements ActionListener{
                         ControladorMenu nuevoControladorMenu = new ControladorMenu();
                         PanelPrincipal panelPrincipal = new PanelPrincipal(nuevoControladorMenu);
                         nuevoControladorMenu.setVistaPrincipal(ventanaPrincipal);
-                        ventanaPrincipal.ajustarTamanio(1200, 800); // restaurar tamaño del menú
                         ventanaPrincipal.CambiarPantalla(panelPrincipal);
                     break;
             }
