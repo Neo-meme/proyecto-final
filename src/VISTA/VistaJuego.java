@@ -24,6 +24,8 @@ public class VistaJuego extends JPanel {
                 this.setPreferredSize(new Dimension(gamePanel.ScreenWidth,gamePanel.ScreenHeight));
 
                 this.add(gamePanel, BorderLayout.CENTER);
+
+                
         } 
         
         // Método para arrancar el juego desde ControladorJuego

@@ -2,26 +2,47 @@ package src.VISTA;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.*;
 
 import src.CONTROLADOR.controller.ControladorMenu;
 
-
 public class VistaClasificaciones extends JPanel {
 
-        public VistaClasificaciones(ControladorMenu Controlador){
-             
-              //Configuramos el color del panel del juego 
-                this.setBackground(Color.decode("#8f00fd"));
-                //this.setFocusable(true) funciona para que el panel detecte el teclado,(Cliks, mouse)
-                this.setFocusable(true); 
+    public VistaClasificaciones(ControladorMenu controlador){
 
-                // 2. Creamos el botón
-                JButton botonVolver = new JButton("Volver");
-                botonVolver.setFont(new Font("SansSerif", Font.BOLD, 20));
-            
-                // 3. Conectamos el botón al controlador que recibimos
-                botonVolver.addActionListener(Controlador);
-                this.add(botonVolver, BorderLayout.SOUTH); // Ponemos el botón en la parte de abajo
+        setLayout(new BorderLayout());
 
+        JTextArea area = new JTextArea();
+
+        try(BufferedReader br =
+            new BufferedReader(
+                new FileReader("clasificaciones.txt"))){
+
+            String linea;
+
+            while((linea = br.readLine()) != null){
+
+                String[] datos = linea.split(";");
+
+                area.append(
+                    "Puntos: " + datos[0]
+                    + " | Tiempo: "
+                    + datos[1]
+                    + " segundos\n"
+                );
+            }
+
+        }catch(Exception e){
+            area.setText("No hay clasificaciones.");
         }
+
+        add(new JScrollPane(area), BorderLayout.CENTER);
+
+        JButton volver =
+            new JButton("Volver");
+
+        volver.addActionListener(controlador);
+
+        add(volver, BorderLayout.SOUTH);
+    }
 }

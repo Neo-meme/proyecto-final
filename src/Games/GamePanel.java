@@ -4,6 +4,7 @@ import src.MODELO.collision.CollisionChecker;
 import src.MODELO.entity.Fantasma;
 import src.MODELO.entity.Pacman;
 import src.CONTROLADOR.input.KeyHandler;
+import src.MODELO.object.GestorClasificaciones;
 import src.MODELO.object.Pellet;
 import src.MODELO.tile.TileManager;
 
@@ -15,6 +16,11 @@ import java.awt.Graphics2D;
 
 
 public class GamePanel extends JPanel implements Runnable {
+
+    // HUD para vida y puntaje 
+    public int vidas = 3;
+    private long tiempoInicio = System.currentTimeMillis();
+    private int tiempoJugado = 0;
 
     //--------------------- configuracion de pantalla ---------------------
 
@@ -144,8 +150,11 @@ public class GamePanel extends JPanel implements Runnable {
      }
    
 
-    // ── Lógica del juego (se llenará después) ─────────────────────
+    // ── Lógica del juego ─────────────────────
     public void update() {
+
+        // ── Actualizar el tiempo jugado  ─────────────────────────────────────
+        tiempoJugado =(int)((System.currentTimeMillis() - tiempoInicio)/1000);
 
         // ── Cronokinesis timer ─────────────────────────────────────
         if (cronoTimer > 0) {
@@ -199,11 +208,20 @@ public class GamePanel extends JPanel implements Runnable {
         }
     }
 
+    // guardado de clasificaciones
+    private void guardarClasificacion(){
+        GestorClasificaciones.guardarResultado(
+            pacman.score,
+            tiempoJugado
+        );
+    }
+
     // ── Renderizado ───────────────────────────────────────────────
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
+        drawHUD(g2); // dibujar el HUD antes del mapa
 
         tileM.draw(g2); // dibujar el mapa
 
@@ -222,17 +240,78 @@ public class GamePanel extends JPanel implements Runnable {
         g2.dispose(); // libera recursos del objeto gráfico
     }
 
+    // IMPORTANTE ESTO SOLO ES DE PRUEBA . ACA SE CARGA EL NIVEL Y SE TERMINA PARA PROBRAR LAS CALIFICACIONES 
     private void cargarSiguienteNivel() {
+
         if (nivelActual == 1) {
+
             nivelActual = 2;
-            tileM.loadMap("nivel2.txt"); // cargará el mapa del nivel 2
+            tileM.loadMap("nivel2.txt");
             setupPellets();
-            pacman.setDefaultValues(); // resetear posición
+            pacman.setDefaultValues();
+
         } else {
-            // victoria total — por ahora solo imprimimos
-            System.out.println("¡Ganaste todos los niveles!");
-            gameThread = null; // detener el loop
+
+            System.out.println("¡Juego terminado!");
+
+            guardarClasificacion();
+
+            gameThread = null;
+
+            volverAlMenu();
         }
+    }
+
+    private void volverAlMenu() {
+
+        javax.swing.SwingUtilities.invokeLater(() -> {
+
+            java.awt.Window ventana =
+                javax.swing.SwingUtilities.getWindowAncestor(this);
+
+            if (ventana instanceof src.VISTA.MenuPrincipal menu) {
+
+                src.CONTROLADOR.controller.ControladorMenu controlador =
+                        new src.CONTROLADOR.controller.ControladorMenu();
+
+                src.VISTA.PanelPrincipal panel =
+                        new src.VISTA.PanelPrincipal(controlador);
+
+                controlador.setVistaPrincipal(menu);
+
+                menu.CambiarPantalla(panel);
+            }
+        });
+    }
+
+    // DESPUES DE DEBE ELIMINAR ALAN PARA CONFIGUAR BIEN CUANDOS SE MUERE EL PACMAN 
+    // IMPORTANTE ESTO SOLO ES DE PRUEBA . ACA SE CARGA EL NIVEL Y SE TERMINA PARA PROBRAR LAS CALIFICACIONES 
+
+
+    private void drawHUD(Graphics2D g2){
+
+        g2.setColor(Color.BLACK);
+        g2.fillRect(0, 0, ScreenWidth, hudHeight);
+
+        g2.setColor(Color.YELLOW);
+
+        g2.drawString(
+            "Puntos: " + pacman.score,
+            20,
+            20
+        );
+
+        g2.drawString(
+            "Tiempo: " + tiempoJugado + "s",
+            250,
+            20
+        );
+
+        g2.drawString(
+            "Vidas: " + vidas,
+            450,
+            20
+        );
     }
         
 }
