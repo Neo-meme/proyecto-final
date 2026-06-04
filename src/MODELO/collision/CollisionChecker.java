@@ -1,7 +1,7 @@
-package src.collision;
+package src.MODELO.collision;
 
-import src.entity.Entity;
-import src.Games.GamePanel;
+import src.MODELO.entity.Entity;
+import src.GAMES.GamePanel;
 
 public class CollisionChecker{
     GamePanel gp;
@@ -22,6 +22,12 @@ public class CollisionChecker{
         int entityRightCol  = entityRightX  / gp.tileSize;
         int entityTopRow    = entityTopY    / gp.tileSize;
         int entityBottomRow = entityBottomY / gp.tileSize;
+
+        // ── Guard: si está fuera del mapa no verificar colisión ───────
+        if (entityLeftCol < 0 || entityRightCol >= gp.maxScreenCol ||
+            entityTopRow  < 0 || entityBottomRow >= gp.maxScreenRow) {
+            return;
+        }
 
         // ── Tiles que el hitbox toca según la dirección ───────────
         int tileNum1, tileNum2;

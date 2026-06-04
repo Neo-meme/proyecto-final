@@ -1,13 +1,13 @@
-package src.tile;
+package src.MODELO.tile;
 
-import src.Games.GamePanel;
+import src.GAMES.GamePanel;
 
-import javax.imageio.ImageIO;
+//import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+//import java.io.BufferedReader;
+//import java.io.IOException;
+//import java.io.InputStream;
+//import java.io.InputStreamReader;
 
 public class TileManager {
 

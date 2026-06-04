@@ -1,11 +1,11 @@
-package src.Games;
+package src.GAMES;
 
-import src.collision.CollisionChecker;
-import src.entity.Fantasma;
-import src.entity.Pacman;
-import src.input.KeyHandler;
-import src.object.Pellet;
-import src.tile.TileManager;
+import src.MODELO.collision.CollisionChecker;
+import src.MODELO.entity.Fantasma;
+import src.MODELO.entity.Pacman;
+import src.CONTROLADOR.input.KeyHandler;
+import src.MODELO.object.Pellet;
+import src.MODELO.tile.TileManager;
 
 import java.awt.Dimension;
 import java.awt.Color;
@@ -27,6 +27,10 @@ public class GamePanel extends JPanel implements Runnable {
     public final int hudHeight    = 32; // espacio para puntaje arriba
     public final int ScreenWidth = tileSize * maxScreenCol+ hudHeight;// 896px
     public  final int ScreenHeight = tileSize * maxScreenRow + hudHeight; // 992 + 48 = 1040px
+
+    //----------------- poder de ralentizar o acelerar el tiempo
+    public double speedMultiplier = 1.0; // 1.0 = normal, 0.5 = lento, 2.0 = rápido
+    public int cronoTimer = 0;           // cuántos frames dura el efecto
 
   
 
@@ -68,6 +72,14 @@ public class GamePanel extends JPanel implements Runnable {
     }
     
     //---------------------- objetos del juego ---------------------
+
+    private int[][] powerPelletPositions = {
+        {1, 2},   // esquina superior izquierda
+        {26, 2},  // esquina superior derecha
+        {1, 15},  // esquina inferior izquierda
+        {26, 15}  // esquina inferior derecha
+    };
+
     private void setupPellets() {
         // Contar cuántas celdas de suelo hay para crear el arreglo
         int count = 0;
@@ -82,12 +94,20 @@ public class GamePanel extends JPanel implements Runnable {
         for (int col = 0; col < maxScreenCol; col++) {
             for (int row = 0; row < maxScreenRow; row++) {
                 if (tileM.mapTileNum[col][row] == 0) {
-                    pellets[i] = new Pellet(col, row, tileSize,hudHeight);
+                    boolean esPower = esPowerPellet(col, row);
+                    pellets[i] = new Pellet(col, row, tileSize,hudHeight,esPower);
                     i++;
                 }
             }
         }
         pelletCount = count;
+    }
+
+    private boolean esPowerPellet(int col, int row) {
+        for (int[] pos : powerPelletPositions) {
+            if (pos[0] == col && pos[1] == row) return true;
+        }
+        return false;
     }
 
 
@@ -109,16 +129,14 @@ public class GamePanel extends JPanel implements Runnable {
             repaint();          // 2. redibujar pantalla
         
             try {
-                double remainingTime = nextDrawTime - System.nanoTime();
-                remainingTime = remainingTime / 1000000; // convertir a milisegundos
-    
-                if (remainingTime < 0) {
-                    remainingTime = 0; // si el tiempo restante es negativo, no espera
-                }
-    
+                // ── Cronokinesis: modificar el intervalo según speedMultiplier ──
+                double intervaloEfectivo = drawInterval / speedMultiplier;
+                double remainingTime = (nextDrawTime - System.nanoTime()) / 1_000_000;
+                if (remainingTime < 0) remainingTime = 0;
+
                 Thread.sleep((long) remainingTime);
-    
-                nextDrawTime += drawInterval; // programar el próximo frame
+                nextDrawTime += intervaloEfectivo;
+
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
@@ -128,13 +146,20 @@ public class GamePanel extends JPanel implements Runnable {
 
     // ── Lógica del juego (se llenará después) ─────────────────────
     public void update() {
+
+        // ── Cronokinesis timer ─────────────────────────────────────
+        if (cronoTimer > 0) {
+            cronoTimer--;
+            if (cronoTimer == 0) {
+                speedMultiplier = 1.0; // restaurar velocidad normal
+            }
+        }
         pacman.update(); // actualizar la lógica
 
         // Actualizamos cada fantasma en el arreglo
         for (Fantasma f : fantasmas) {
             f.update(); 
         }
-
         checkPelletCollision();
     }
 

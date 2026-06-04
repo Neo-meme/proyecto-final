@@ -1,6 +1,9 @@
+package src.VISTA;
+
 import javax.swing.*;
 import java.awt.*;
 
+import src.CONTROLADOR.controller.ControladorMenu;
 
 public class VistaInstrucciones extends JPanel {
 

@@ -1,4 +1,8 @@
+package src.VISTA;
+
 import javax.swing.*;
+
+import src.CONTROLADOR.controller.ControladorMenu;
 
 // Heredamos de JFrame para crear nuestra ventana principal del menú
 public class MenuPrincipal extends JFrame {

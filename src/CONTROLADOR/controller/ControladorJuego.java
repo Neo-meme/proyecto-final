@@ -1,6 +1,12 @@
+package src.CONTROLADOR.controller;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
+
+import src.VISTA.MenuPrincipal;
+import src.VISTA.PanelPrincipal;
+import src.VISTA.VistaJuego;
 
 public class ControladorJuego implements ActionListener{
         private MenuPrincipal ventanaPrincipal ;

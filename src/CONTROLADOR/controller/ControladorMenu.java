@@ -1,5 +1,12 @@
+package src.CONTROLADOR.controller;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import src.VISTA.MenuPrincipal;
+import src.VISTA.PanelPrincipal;
+import src.VISTA.VistaClasificaciones;
+import src.VISTA.VistaInstrucciones;
 
 // Al implementar ActionListener, esta clase esta obligada a tener un metodo para responder a los clics
 public class ControladorMenu implements ActionListener {

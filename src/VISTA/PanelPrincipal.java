@@ -1,3 +1,5 @@
+package src.VISTA;
+
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -5,6 +7,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.border.EmptyBorder;
+
+import src.CONTROLADOR.controller.ControladorMenu;
+
+
 
 public class PanelPrincipal  extends JPanel {
    public PanelPrincipal(ControladorMenu Controlador) {

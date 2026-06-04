@@ -1,8 +1,10 @@
+package src.VISTA;
 
 import javax.swing.*;
-import src.Games.GamePanel;
+import src.GAMES.GamePanel;
 import java.awt.*;
 
+import src.CONTROLADOR.controller.ControladorJuego;
 
 public class VistaJuego extends JPanel {
 

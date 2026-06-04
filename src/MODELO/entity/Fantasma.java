@@ -1,5 +1,6 @@
-package src.entity;
-import src.Games.GamePanel;
+package src.MODELO.entity;
+
+import src.GAMES.GamePanel;
 
 import java.awt.Graphics2D;
 import java.awt.Color;
@@ -48,6 +49,8 @@ public class Fantasma extends Entity {
 
     @Override
     public void update() {
+        checkTunnel();
+
         collisionOn = false;
         gp.cManager.checkTile(this); 
 
@@ -70,7 +73,7 @@ public class Fantasma extends Entity {
             spriteNum = (spriteNum == 1) ? 2 : 1;
             spriteCounter = 0;
         }
-        checkTunnel();
+        
     }
 
     /**

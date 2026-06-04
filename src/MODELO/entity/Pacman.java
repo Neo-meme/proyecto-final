@@ -1,7 +1,7 @@
-package src.entity;
+package src.MODELO.entity;
 
-import src.input.KeyHandler;
-import src.Games.GamePanel;
+import src.CONTROLADOR.input.KeyHandler;
+import src.GAMES.GamePanel;
 
 import java.awt.Graphics2D;
 import java.awt.Color;
@@ -45,11 +45,16 @@ public class Pacman extends Entity {
         if (keyH.downPressed)  direction = "down";
         if (keyH.leftPressed)  direction = "left";
         if (keyH.rightPressed) direction = "right";
-        // 2. Verificar colisión con paredes
+
+        // 2.Túnel lateral 
+        checkTunnel();
+
+
+        // 3. Verificar colisión con paredes
         collisionOn = false;
         gp.cManager.checkTile(this); // verifica colisión y actualiza collisionOn
 
-        //3 moverse solo si no hay colisión
+        //4 moverse solo si no hay colisión
         if (!collisionOn) {
             switch (direction) {
                 case "up"    -> y -= speed;
@@ -59,16 +64,14 @@ public class Pacman extends Entity {
             }
         }
 
-        // 4. Animación: alternar sprite cada 10 frames
+        // 5 Animación: alternar sprite cada 10 frames
         spriteCounter++;
         if (spriteCounter > 10) {
             spriteNum = (spriteNum == 1) ? 2 : 1;
             spriteCounter = 0;
         }
 
-        // ── Túnel lateral ─────────────────────────────────────────
-        checkTunnel();
-
+        
     }
 
     private void checkTunnel() {
@@ -77,8 +80,8 @@ public class Pacman extends Entity {
             x = gp.ScreenWidth - gp.tileSize;
         }
         // Sale por la derecha → reaparece por la izquierda
-        if (x > gp.ScreenWidth) {
-            x = -gp.tileSize;
+        if (x > gp.ScreenWidth - gp.tileSize) {
+        x = 0;
         }
     }
 
