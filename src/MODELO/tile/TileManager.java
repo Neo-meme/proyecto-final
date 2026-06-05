@@ -2,15 +2,17 @@ package src.MODELO.tile;
 
 import src.GAMES.GamePanel;
 
-//import javax.imageio.ImageIO;
+import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
-//import java.io.BufferedReader;
+import java.awt.image.BufferedImage;
 //import java.io.IOException;
 //import java.io.InputStream;
 //import java.io.InputStreamReader;
 
 public class TileManager {
 
+    private BufferedImage wallTexture;
+    
     GamePanel gp;
     // ── Tipos de tiles disponibles ─────────────────────────────────
     public Tile[] tileSet;
@@ -24,6 +26,20 @@ public class TileManager {
 
         tileSet = new Tile[10]; // por ahora, solo 10 tipos de tile
         mapTileNum = new int[gp.maxScreenCol][gp.maxScreenRow]; // mapa del nivel
+
+        try {
+
+            wallTexture = ImageIO.read(
+                getClass().getResourceAsStream(
+                    "/resources/nivel 1/pacman.png"
+                )
+            );
+
+        } catch (Exception e) {
+            System.out.println("Error cargando textura del laberinto");
+            e.printStackTrace();
+        }
+
 
         getTileImage();
         loadMap("nivel 1.txt");
@@ -118,24 +134,80 @@ public class TileManager {
     }
 
     // ── Dibuja el mapa en pantalla ─────────────────────────────────
+    // ── Dibuja el mapa en pantalla ─────────────────────────────────
     public void draw(Graphics2D g2) {
 
         for (int col = 0; col < gp.maxScreenCol; col++) {
+
             for (int row = 0; row < gp.maxScreenRow; row++) {
 
                 int tileNum = mapTileNum[col][row];
-                int x = col * gp.tileSize;
-                int y = row * gp.tileSize + gp.hudHeight; // ajustar por espacio del HUD
 
-                // Temporal: dibujamos colores hasta tener imágenes PNG
-                if (tileNum == 1) {
-                    g2.setColor(java.awt.Color.BLUE);
-                } else if (tileNum == 2) {
-                    g2.setColor(java.awt.Color.BLACK); // túnel
-                } else {
-                    g2.setColor(java.awt.Color.BLACK);
+                int x = col * gp.tileSize;
+                int y = row * gp.tileSize + gp.hudHeight;
+
+                // ──────────────────────────────────────────────
+                // PAREDES
+                // ──────────────────────────────────────────────
+                if(tileNum == 1){
+
+                    if(wallTexture != null){
+
+                        g2.drawImage(
+                            wallTexture,
+                            x,
+                            y,
+                            gp.tileSize,
+                            gp.tileSize,
+                            null
+                        );
+
+                    }else{
+
+                        g2.setColor(java.awt.Color.BLUE);
+
+                        g2.fillRect(
+                            x,
+                            y,
+                            gp.tileSize,
+                            gp.tileSize
+                        );
+                    }
                 }
-                g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+
+                // ──────────────────────────────────────────────
+                // TUNEL
+                // ──────────────────────────────────────────────
+                else if(tileNum == 2){
+
+                    g2.setColor(java.awt.Color.BLACK);
+
+                    g2.fillRect(
+                        x,
+                        y,
+                        gp.tileSize,
+                        gp.tileSize
+                    );
+                }
+
+                // ──────────────────────────────────────────────
+                // CAMINO NORMAL
+                // ──────────────────────────────────────────────
+                else{
+
+                    g2.setColor(new java.awt.Color(
+                            10,
+                            10,
+                            10
+                    ));
+
+                    g2.fillRect(
+                        x,
+                        y,
+                        gp.tileSize,
+                        gp.tileSize
+                    );
+                }
             }
         }
     }
