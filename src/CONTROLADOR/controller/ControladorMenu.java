@@ -7,6 +7,7 @@ import src.VISTA.MenuPrincipal;
 import src.VISTA.PanelPrincipal;
 import src.VISTA.VistaClasificaciones;
 import src.VISTA.VistaInstrucciones;
+import src.VISTA.VistaSeleccionPersonaje;
 
 // Al implementar ActionListener, esta clase esta obligada a tener un metodo para responder a los clics
 public class ControladorMenu implements ActionListener {
@@ -35,7 +36,8 @@ public class ControladorMenu implements ActionListener {
             case "Jugar":
                 //Instanciamos la neuva vista (Juegoo)
                 ControladorJuego GameController = new ControladorJuego(vistaPrincipal);
-                GameController.iniciarPartida();
+                VistaSeleccionPersonaje vistaSeleccion = new VistaSeleccionPersonaje(GameController);
+                vistaPrincipal.CambiarPantalla(vistaSeleccion);
                 break;
                 
             case "Instrucciones":

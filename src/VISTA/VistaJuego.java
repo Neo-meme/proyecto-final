@@ -4,13 +4,14 @@ import javax.swing.*;
 import src.GAMES.GamePanel;
 import java.awt.*;
 
+import src.MODELO.entity.TipoPacman;
 import src.CONTROLADOR.controller.ControladorJuego;
 
 public class VistaJuego extends JPanel {
 
         private GamePanel gamePanel; 
 
-        public VistaJuego(ControladorJuego Controlador){
+        public VistaJuego(ControladorJuego Controlador,TipoPacman tipoSeleccionado){
 
                 this.setLayout(new BorderLayout());
                 //Configuramos el color del panel del juego 
@@ -18,7 +19,7 @@ public class VistaJuego extends JPanel {
                 //this.setFocusable(true) funciona para que el panel detecte el teclado
                 this.setFocusable(true); 
 
-                gamePanel = new GamePanel();
+                gamePanel = new GamePanel(tipoSeleccionado);
 
                 // VistaJuego toma exactamente el tamaño del GamePanel
                 this.setPreferredSize(new Dimension(gamePanel.ScreenWidth,gamePanel.ScreenHeight));

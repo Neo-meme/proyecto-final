@@ -3,16 +3,19 @@ package src.GAMES;
 import src.MODELO.collision.CollisionChecker;
 import src.MODELO.entity.Fantasma;
 import src.MODELO.entity.Pacman;
+import src.MODELO.entity.TipoPacman;
 import src.CONTROLADOR.input.KeyHandler;
 import src.MODELO.object.GestorClasificaciones;
 import src.MODELO.object.Pellet;
 import src.MODELO.tile.TileManager;
+import src.MODELO.entity.TipoPacman;
 
 import java.awt.Dimension;
 import java.awt.Color;
 import javax.swing.JPanel;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.util.Random;
 
 
 public class GamePanel extends JPanel implements Runnable {
@@ -39,6 +42,10 @@ public class GamePanel extends JPanel implements Runnable {
     public int cronoTimer = 0;           // cuántos frames dura el efecto
 
   
+    //------- funciones para escoger el tipo de pacman 
+    public TipoPacman tipoPacman;
+
+
 
     //----------- configuracion del loop -----------
     final int FPS = 60;
@@ -50,25 +57,29 @@ public class GamePanel extends JPanel implements Runnable {
     public KeyHandler keyH      = new KeyHandler();
     public TileManager tileM    = new TileManager(this);       // 1. primero el mapa
     public CollisionChecker cManager = new CollisionChecker(this); // 2. luego colisiones
-    public Pacman pacman        = new Pacman(this, keyH);      // 3. luego Pac-Man
+    public Pacman pacman;      // 3. luego Pac-Man
 
   
 
     // ------------- objetos del juego -------------
     public Pellet[] pellets;
     public int pelletCount = 0;
+   
 
     // Arreglo (Array) para almacenar nuestros 3 fantasmas
     public Fantasma[] fantasmas = new Fantasma[3]; 
 
 
     //---------------------- constructor ---------------------
-    public GamePanel(){
+    public GamePanel(TipoPacman tipoPacman){
+        this.tipoPacman = tipoPacman;
         this.setPreferredSize (new Dimension(ScreenWidth,ScreenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
+        pacman = new Pacman(this, keyH); // aca se escoge el tipo de pacman que se va a jugar
+
         setupPellets(); 
 
         // Inicializamos los fantasmas asignando colores y posiciones únicas
@@ -189,8 +200,21 @@ public class GamePanel extends JPanel implements Runnable {
                 );
 
                 if (dist < tileSize / 2) {
-                    pellet.visible = false;
-                    pacman.score += 10; // sumar puntos
+                pellet.visible = false;
+
+                    if (pellet.isPower) {
+                        // ── Cronokinesis: efecto aleatorio ─────────────
+                        pacman.score += 50; // vale más puntos
+                        Random rand = new Random();
+                        if (rand.nextBoolean()) {
+                            speedMultiplier = 0.4; // ralentizar todo
+                        } else {
+                            speedMultiplier = 2.0; // acelerar todo
+                        }
+                            cronoTimer = 60 * 8 ; // dura 8 segundos
+                        } else {
+                            pacman.score += 10; // pellet normal
+                        }
                 }
             }
         }
@@ -308,11 +332,28 @@ public class GamePanel extends JPanel implements Runnable {
         );
 
         g2.drawString(
-            "Vidas: " + vidas,
+            "Vidas: ",
             450,
             20
         );
-    }
-        
+
+        for(int i = 0; i < pacman.vidas; i++){
+
+            g2.setColor(pacman.colorPacman);
+
+            g2.fillOval(
+                510 + (i * 20),
+                8,
+                14,
+                14
+            );
+        }
+
+        g2.drawString(
+            "Tipo: " + tipoPacman,
+            650,
+            20
+        );
+    }   
 }
 

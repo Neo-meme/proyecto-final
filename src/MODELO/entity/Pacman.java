@@ -12,6 +12,9 @@ public class Pacman extends Entity {
     GamePanel gp;
     KeyHandler keyH;
 
+    public int vidas;
+    public Color colorPacman;
+
     // Constructor
     public Pacman(GamePanel gp, KeyHandler keyH) {
         this.gp = gp;
@@ -33,8 +36,30 @@ public class Pacman extends Entity {
     public void setDefaultValues() {
         x = gp.tileSize * 13; // Posición inicial en el centro del mapa
         y = gp.tileSize * 16;
-        speed = 2; // Velocidad de movimiento
         direction = "izquierda"; // Dirección inicial
+        switch(gp.tipoPacman){
+
+            case CLASICO:
+
+                vidas = 3;
+                speed = 2;
+                colorPacman = Color.YELLOW;
+                break;
+
+            case TANQUE:
+
+                vidas = 5;
+                speed = 1;
+                colorPacman = Color.GREEN;
+                break;
+
+            case VELOZ:
+
+                vidas = 1;
+                speed = 4;
+                colorPacman = Color.CYAN;
+                break;
+        }
     }
 
     //---- logica de movimiento y animación -----
@@ -46,15 +71,11 @@ public class Pacman extends Entity {
         if (keyH.leftPressed)  direction = "left";
         if (keyH.rightPressed) direction = "right";
 
-        // 2.Túnel lateral 
-        checkTunnel();
-
-
-        // 3. Verificar colisión con paredes
+         // 2. Verificar colisión con paredes
         collisionOn = false;
         gp.cManager.checkTile(this); // verifica colisión y actualiza collisionOn
 
-        //4 moverse solo si no hay colisión
+        //3 moverse solo si no hay colisión
         if (!collisionOn) {
             switch (direction) {
                 case "up"    -> y -= speed;
@@ -63,6 +84,9 @@ public class Pacman extends Entity {
                 case "right" -> x += speed;
             }
         }
+
+        // 4.Túnel lateral 
+        checkTunnel();
 
         // 5 Animación: alternar sprite cada 10 frames
         spriteCounter++;
@@ -75,13 +99,13 @@ public class Pacman extends Entity {
     }
 
     private void checkTunnel() {
-        // Sale por la izquierda → reaparece por la derecha
-        if (x + gp.tileSize < 0) {
+        // tunel por la izaquierda llega a la derecha
+        if(x <= -gp.tileSize){
             x = gp.ScreenWidth - gp.tileSize;
         }
-        // Sale por la derecha → reaparece por la izquierda
-        if (x > gp.ScreenWidth - gp.tileSize) {
-        x = 0;
+
+        if(x >= gp.ScreenWidth){
+            x = 0;
         }
     }
 
@@ -97,7 +121,7 @@ public class Pacman extends Entity {
 
 
         // Temporalmente dibujamos un círculo amarillo
-        g2.setColor(Color.YELLOW);
+        g2.setColor(colorPacman);
 
         // Animación simple: boca abierta vs cerrada
         if (spriteNum == 1) {
