@@ -1,7 +1,7 @@
 package src.VISTA;
 
 import javax.swing.*;
-import src.GAMES.GamePanel;
+import src.Games.GamePanel;
 import java.awt.*;
 
 import src.MODELO.entity.TipoPacman;

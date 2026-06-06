@@ -1,6 +1,6 @@
 package src.MODELO.tile;
 
-import src.GAMES.GamePanel;
+import src.Games.GamePanel;
 
 import javax.imageio.ImageIO;
 import java.awt.Graphics2D;

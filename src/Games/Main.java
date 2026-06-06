@@ -1,4 +1,4 @@
-package src.GAMES;
+package src.Games;
 import src.CONTROLADOR.controller.ControladorMenu;
 import src.VISTA.MenuPrincipal;
 

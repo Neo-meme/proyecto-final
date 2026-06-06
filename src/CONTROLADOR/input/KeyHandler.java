@@ -4,10 +4,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
 //keyListener es la interfaz que se encarga de escuchar las teclas que se presionan, se sueltan o se escriben
-
 public class KeyHandler implements KeyListener {
 
     public boolean upPressed, downPressed, leftPressed, rightPressed; // para saber si se esta presionando alguna de las teclas
+    public boolean pausePressed; // NUEVO: Tecla para pausar el juego
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -30,7 +30,10 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT){
             rightPressed = true;
         }
-        
+        // NUEVO: Detectar tecla P o ESCAPE para Pausa
+        if(code == KeyEvent.VK_P || code == KeyEvent.VK_ESCAPE){
+            pausePressed = true;
+        }
     }
 
     // keyReleased se ejecuta cuando se suelta una tecla
@@ -49,7 +52,10 @@ public class KeyHandler implements KeyListener {
         if(code == KeyEvent.VK_D || code == KeyEvent.VK_RIGHT){
             rightPressed = false;
         }
-        
+        // NUEVO: Soltar tecla P o ESCAPE
+        if(code == KeyEvent.VK_P || code == KeyEvent.VK_ESCAPE){
+            pausePressed = false;
+        }
     }
 
     /*
@@ -57,6 +63,4 @@ public class KeyHandler implements KeyListener {
         y asi poder mover al personaje en el juego por ejemplo, si upPressed es true, entonces el personaje se movera hacia arriba, 
         si downPressed es true, entonces el personaje se movera hacia abajo, y asi sucesivamente para las demas teclas.
     */
-    
-    
 }

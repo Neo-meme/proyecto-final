@@ -1,7 +1,8 @@
 package src.MODELO.collision;
 
 import src.MODELO.entity.Entity;
-import src.GAMES.GamePanel;
+import src.Games.GamePanel;
+import java.awt.Rectangle;
 
 public class CollisionChecker{
     GamePanel gp;
@@ -9,6 +10,24 @@ public class CollisionChecker{
     public CollisionChecker(GamePanel gp){
         this.gp = gp;
     }
+    //Creamos un metodo para la colision entre personajes 
+    public boolean checkEntityCollision(Entity pacman, Entity fantasma){
+        // Calcular la posicion real del rectangle del pacman en el mapa
+        int pacmanX = pacman.x + pacman.hitBox.x;
+        int pacmanY = pacman.y + pacman.hitBox.y;
+        Rectangle rectPacman = new Rectangle(pacmanX, pacmanY, pacman.hitBox.width, pacman.hitBox.height);
+
+        //calculamos la posicion real del rectangle del fantasma en el mapa
+        int fantasmaX = fantasma.x + fantasma.hitBox.x;
+        int fantasmaY = fantasma.y + fantasma.hitBox.y;
+        Rectangle rectFantasma = new Rectangle(fantasmaX, fantasmaY, fantasma.hitBox.width, fantasma.hitBox.height);
+
+        //Devolvemos true si se tocan o false si no se tocan para activar el estado de juego 1
+        return rectPacman.intersects(rectFantasma);
+    }
+
+
+
 
     public void checkTile(Entity entity){
         // ── Coordenadas absolutas del hitbox en píxeles ───────────
@@ -23,7 +42,7 @@ public class CollisionChecker{
         int entityTopRow    = entityTopY    / gp.tileSize;
         int entityBottomRow = entityBottomY / gp.tileSize;
 
-        // ── Guard: si está fuera del mapa no verificar colisión ───────
+        // ── Guard: si está fuera del mapa no verificar colision ───────
         if (entityLeftCol < 0 || entityRightCol >= gp.maxScreenCol ||
             entityTopRow  < 0 || entityBottomRow >= gp.maxScreenRow) {
             return;
