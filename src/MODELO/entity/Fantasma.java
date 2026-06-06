@@ -89,7 +89,7 @@ public class Fantasma extends Entity {
         }
     }
 
-    // Los fantasmas tambien pueden usar los túneles laterales
+    // Los fantasmas tambien pueden usar los tuneles laterales
     private void checkTunnel() {
         if (x + gp.tileSize < 0) {
             x = gp.ScreenWidth - gp.tileSize;
@@ -106,7 +106,7 @@ public class Fantasma extends Entity {
         int drawX    = x + offset;
         int drawY    = y + offset + gp.hudHeight; // ajustar por espacio del HUD
 
-        // ── AQUÍ ESTÁ EL CAMBIO: Verificamos si están vulnerables ──
+        //nUEVO: VERIFICA SI SE PUEDEN COMER LOS FANTASMAS
         if (gp.fantasmasVulnerables) {
             g2.setColor(Color.BLUE); // Si están asustados, se pintan de azul
         } else {
@@ -117,11 +117,11 @@ public class Fantasma extends Entity {
         g2.fillOval(drawX, drawY, drawSize, drawSize / 2 + 2);
         g2.fillRect(drawX, drawY + drawSize / 2, drawSize, drawSize / 2);
 
-        // Dibuja los ojos. Cambian de posición según el spriteNum creando ilusión de movimiento.
+        // OJOS
         g2.setColor(Color.WHITE);
         int ojoSize = drawSize / 4;
         
-        // ── DETALLE EXTRA (Opcional): Cambiamos los ojos si están asustados ──
+        // Nuevo: Ojos cuando esta asustado
         if (gp.fantasmasVulnerables) {
             // Ojos de "asustado" (más pequeños o diferentes)
             g2.setColor(Color.ORANGE); // Un toque clásico es poner detalles naranjas/amarillos

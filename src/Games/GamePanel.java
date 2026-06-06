@@ -75,7 +75,7 @@ public class GamePanel extends JPanel implements Runnable {
     public GamePanel(TipoPacman tipoPacman){
         this.tipoPacman = tipoPacman;
        
-        // ── CONFIGURAMOS LAS VIDAS SEGÚN EL PERSONAJE ELEGIDO ──
+        // Nuevo: Vidas dependeindo del personaje 
         if (tipoPacman != null && tipoPacman.toString().toUpperCase().contains("VELOZ")) {
             this.vidas = 1; 
         } else {
@@ -88,7 +88,7 @@ public class GamePanel extends JPanel implements Runnable {
         this.addKeyListener(keyH);
         this.setFocusable(true);
         
-        // ── LAYOUT NULO PARA POSICIONAR BOTONES LIBREMENTE ──
+        // Nuevo: Posiciona botones
         this.setLayout(null); 
         configurarBotones();
        
@@ -102,9 +102,9 @@ public class GamePanel extends JPanel implements Runnable {
         fantasmas[2] = new Fantasma(this, Color.CYAN, tileSize * 14, tileSize * 10);  // Inky
     }
 
-    // ── CONFIGURACIÓN DE LOS BOTONES DE INTERFAZ ──
+    // Nuevo: Botones salir 
     private void configurarBotones() {
-        // Botón de Reanudar (Solo para Pausa)
+        //Nuevo: Boton de Reanudar (Solo para Pausa)
         btnReanudar = new JButton("Reanudar Partida");
         btnReanudar.setBounds(ScreenWidth / 2 - 120, ScreenHeight / 2, 240, 50);
         btnReanudar.setFont(new Font("Arial", Font.BOLD, 16));
@@ -117,7 +117,7 @@ public class GamePanel extends JPanel implements Runnable {
         });
         this.add(btnReanudar);
 
-        // Botón de Reintentar (Solo para Game Over)
+        // Nuevo: Boton de Reintentar (Solo para Game Over)
         btnReintentar = new JButton("Reintentar Nivel");
         btnReintentar.setBounds(ScreenWidth / 2 - 120, ScreenHeight / 2, 240, 50);
         btnReintentar.setFont(new Font("Arial", Font.BOLD, 16));
@@ -126,7 +126,7 @@ public class GamePanel extends JPanel implements Runnable {
         btnReintentar.addActionListener(e -> reiniciarJuegoCompleto());
         this.add(btnReintentar);
 
-        // Botón de Volver al Menú Principal (Salir)
+        //Nuevo: Boton de Volver al Menu Principal (Salir)
         btnVolverMenu = new JButton("Salir al Menú Principal");
         btnVolverMenu.setBounds(ScreenWidth / 2 - 120, ScreenHeight / 2 + 70, 240, 50);
         btnVolverMenu.setFont(new Font("Arial", Font.BOLD, 16));
@@ -222,10 +222,10 @@ public class GamePanel extends JPanel implements Runnable {
         }
      }
    
-    // ── Lógica del juego ─────────────────────
+    // ── Logica juego ─────────────────────
     public void update() {
 
-        // ── LÓGICA DE PAUSA (Estado 4) ──
+        // Nuevo: Logica pausar
         if (keyH.pausePressed && !pausaPresionadaPreviamente) {
             if (estadoJuego == 1) {
                 estadoJuego = 4; // Entrar en pausa
@@ -250,7 +250,7 @@ public class GamePanel extends JPanel implements Runnable {
                     boolean choqueFantasma = cManager.checkEntityCollision(pacman, f);
 
                     if(choqueFantasma){
-                        // ── LÓGICA: COMER FANTASMAS ──
+                        // Nuevo: Logica comer fantasmas
                         if (fantasmasVulnerables) {
                             pacman.score += 200; // Come al fantasma
                             f.setDefaultValues(); // Lo manda a la caja
@@ -282,7 +282,7 @@ public class GamePanel extends JPanel implements Runnable {
                 if (cronoTimer == 0) speedMultiplier = 1.0; 
             }
 
-            // ── VULNERABILIDAD TIMER ──
+            // Nuevo: TIEMPO de que el pacman se puede comer los fantasmas
             if (timerVulnerabilidad > 0) {
                 timerVulnerabilidad--;
                 if (timerVulnerabilidad == 0) {
@@ -305,7 +305,6 @@ public class GamePanel extends JPanel implements Runnable {
     }
 
     private void checkPelletCollision() {
-        // Creamos un rectángulo para Pac-Man basado en su posición actual y su hitbox
         Rectangle pacRect = new Rectangle(
             pacman.x + pacman.hitBox.x, 
             pacman.y + pacman.hitBox.y, 
@@ -318,12 +317,12 @@ public class GamePanel extends JPanel implements Runnable {
                 // Creamos un rectángulo para la bolita
                 Rectangle pelletRect = new Rectangle(pellet.x, pellet.y, pellet.size, pellet.size);
 
-                // Si los rectángulos se solapan, se come la bolita
+                // Comerse la bolita
                 if (pacRect.intersects(pelletRect)) {
                     pellet.visible = false;
 
                     if (pellet.isPower) {
-                        // ── ACTIVA EL PODER DE COMER FANTASMAS ──
+                        // Nuevo: Activa comer fantasmas
                         fantasmasVulnerables = true;
                         timerVulnerabilidad = 60 * 8; 
                         

@@ -5,7 +5,7 @@ import java.awt.Graphics2D;
 
 public class Pellet {
 
-    // ── Posición en el mapa (en píxeles) ──────────────────────────
+    // ── Posicion en el mapa ──────────────────────────
     public int x, y;
     private int hudOffset;
     // ── Estado ────────────────────────────────────────────────────
@@ -15,7 +15,7 @@ public class Pellet {
     public int size;
 
     // ── poderes pa el pacman  ─────────────────────────────────────────────
-    public boolean isPower; // true = power pellet (punto grande)
+    public boolean isPower; // true = power pellet (Futica)
 
     // ── Constructor ───────────────────────────────────────────────
     public Pellet(int col, int row, int tileSize, int hudHeight, boolean isPower) {
@@ -32,13 +32,13 @@ public class Pellet {
     
     // ── Dibujo ────────────────────────────────────────────────────
     public void draw(Graphics2D g2) {
-        if (!visible) return; // Si ya se la comió, no dibuja nada
+        if (!visible) return; 
 
         if (isPower) {
-            // ── DIBUJAR FRUTICA (CEREZAS) ──
+            // NUEVO: dIBUJA FRUTICAS
             int fruitSize = 14;
            
-            // Usamos tu lógica: Posición real + el empujón del HUD para dibujarlo
+            
             int drawX = x;
             int drawY = y + hudOffset;
 
@@ -58,8 +58,6 @@ public class Pellet {
             g2.fillOval(drawX + 10, drawY + 5, 4, 4); // Brillo derecha
 
         } else {
-            // ── DIBUJAR PUNTO NORMAL ──
-            // Usamos tu lógica exacta que funciona de maravilla
             g2.setColor(new Color(255, 255, 153)); // Amarillo pastel suave
             g2.fillOval(x, y + hudOffset, size, size);
         }
