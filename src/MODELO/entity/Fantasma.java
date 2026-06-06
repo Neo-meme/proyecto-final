@@ -89,7 +89,7 @@ public class Fantasma extends Entity {
         }
     }
 
-    // Los fantasmas tambien pueden usar los túneles laterales
+    // Los fantasmas tambien pueden usar los tuneles laterales
     private void checkTunnel() {
         if (x + gp.tileSize < 0) {
             x = gp.ScreenWidth - gp.tileSize;
@@ -106,20 +106,36 @@ public class Fantasma extends Entity {
         int drawX    = x + offset;
         int drawY    = y + offset + gp.hudHeight; // ajustar por espacio del HUD
 
+        //nUEVO: VERIFICA SI SE PUEDEN COMER LOS FANTASMAS
+        if (gp.fantasmasVulnerables) {
+            g2.setColor(Color.BLUE); // Si están asustados, se pintan de azul
+        } else {
+            g2.setColor(colorFantasma); // Si no, usan su color normal (Rojo, Rosa, Cyan)
+        }
+
         // Dibuja el cuerpo base del fantasma (mitad ovalo, mitad rectángulo)
-        g2.setColor(colorFantasma);
         g2.fillOval(drawX, drawY, drawSize, drawSize / 2 + 2);
         g2.fillRect(drawX, drawY + drawSize / 2, drawSize, drawSize / 2);
 
-        // Dibuja los ojos. Cambian de posición según el spriteNum creando ilusión de movimiento.
+        // OJOS
         g2.setColor(Color.WHITE);
         int ojoSize = drawSize / 4;
-        if (spriteNum == 1) {
-            g2.fillOval(drawX + 3, drawY + 4, ojoSize, ojoSize);
-            g2.fillOval(drawX + drawSize - 7, drawY + 4, ojoSize, ojoSize);
+        
+        // Nuevo: Ojos cuando esta asustado
+        if (gp.fantasmasVulnerables) {
+            // Ojos de "asustado" (más pequeños o diferentes)
+            g2.setColor(Color.ORANGE); // Un toque clásico es poner detalles naranjas/amarillos
+            g2.fillRect(drawX + 4, drawY + 6, ojoSize, ojoSize / 2);
+            g2.fillRect(drawX + drawSize - 8, drawY + 6, ojoSize, ojoSize / 2);
         } else {
-            g2.fillOval(drawX + 5, drawY + 3, ojoSize, ojoSize);
-            g2.fillOval(drawX + drawSize - 9, drawY + 3, ojoSize, ojoSize);
+            // Ojos normales
+            if (spriteNum == 1) {
+                g2.fillOval(drawX + 3, drawY + 4, ojoSize, ojoSize);
+                g2.fillOval(drawX + drawSize - 7, drawY + 4, ojoSize, ojoSize);
+            } else {
+                g2.fillOval(drawX + 5, drawY + 3, ojoSize, ojoSize);
+                g2.fillOval(drawX + drawSize - 9, drawY + 3, ojoSize, ojoSize);
+            }
         }
     }
 }

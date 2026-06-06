@@ -26,21 +26,6 @@ public class TileManager {
 
         tileSet = new Tile[10]; // por ahora, solo 10 tipos de tile
         mapTileNum = new int[gp.maxScreenCol][gp.maxScreenRow]; // mapa del nivel
-
-        try {
-
-            wallTexture = ImageIO.read(
-                getClass().getResourceAsStream(
-                    "/resources/nivel 1/pacman.png"
-                )
-            );
-
-        } catch (Exception e) {
-            System.out.println("Error cargando textura del laberinto");
-            e.printStackTrace();
-        }
-
-
         getTileImage();
         loadMap("nivel 1.txt");
     }
@@ -59,9 +44,22 @@ public class TileManager {
         tileSet[2] = new Tile();
         tileSet[2].collision = false;
         tileSet[2].tunnel    = true; // marca especial
+        
+    }
 
-        
-        
+    public void cargarTexturaPared() {
+        try {
+            String nivel  = "nivel " + gp.nivelActual;
+            String tipo  = gp.tipoPacman.toString().toUpperCase();// "clasico", "tanque", "veloz"
+            String ruta   = "/resources/" + nivel + "/" + tipo + ".png";
+            wallTexture = ImageIO.read(getClass().getResourceAsStream(ruta));
+            tileSet[1].image = wallTexture;
+
+        } catch (Exception e) {
+            System.out.println("Error cargando textura: " + e.getMessage());
+            wallTexture = null;
+            tileSet[1].image = null;
+        }
     }
 
     // ── Carga el mapa desde un archivo .txt ───────────────────────
@@ -117,7 +115,7 @@ public class TileManager {
             {1,1,1,1,0,1,1,1,1,0,1,1,0,0,0,0,1,1,0,1,1,1,1,0,1,1,1,1},
             {1,1,1,1,0,0,0,0,0,0,1,1,0,0,0,0,1,1,0,0,0,0,0,0,1,1,1,1},
             {1,1,1,1,0,1,1,0,1,0,1,1,1,1,1,1,1,1,0,1,0,1,1,0,1,1,1,1},
-            {2,0,0,0,0,1,1,0,1,0,0,0,0,1,1,0,0,0,0,1,0,1,1,0,0,0,0,2},
+            {2,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,1,0,1,1,0,0,0,0,2},
             {1,1,1,1,0,1,1,0,1,1,1,0,0,0,0,0,0,1,1,1,0,1,1,0,1,1,1,1},
             {1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1,0,0,0,0,0,0,0,0,1,1,1,1},
             {1,1,1,1,0,1,1,1,0,1,1,0,1,1,1,1,0,1,1,0,1,1,1,0,1,1,1,1},
@@ -136,77 +134,26 @@ public class TileManager {
     // ── Dibuja el mapa en pantalla ─────────────────────────────────
     // ── Dibuja el mapa en pantalla ─────────────────────────────────
     public void draw(Graphics2D g2) {
-
         for (int col = 0; col < gp.maxScreenCol; col++) {
-
             for (int row = 0; row < gp.maxScreenRow; row++) {
-
                 int tileNum = mapTileNum[col][row];
-
                 int x = col * gp.tileSize;
                 int y = row * gp.tileSize + gp.hudHeight;
 
-                // ──────────────────────────────────────────────
-                // PAREDES
-                // ──────────────────────────────────────────────
-                if(tileNum == 1){
-
-                    if(wallTexture != null){
-
-                        g2.drawImage(
-                            wallTexture,
-                            x,
-                            y,
-                            gp.tileSize,
-                            gp.tileSize,
-                            null
-                        );
-
-                    }else{
-
+                if (tileNum == 1) {
+                    if (tileSet[1].image != null) {
+                        g2.drawImage(tileSet[1].image, x, y,
+                            gp.tileSize, gp.tileSize, null);
+                    } else {
                         g2.setColor(java.awt.Color.BLUE);
-
-                        g2.fillRect(
-                            x,
-                            y,
-                            gp.tileSize,
-                            gp.tileSize
-                        );
+                        g2.fillRect(x, y, gp.tileSize, gp.tileSize);
                     }
-                }
-
-                // ──────────────────────────────────────────────
-                // TUNEL
-                // ──────────────────────────────────────────────
-                else if(tileNum == 2){
-
+                } else if (tileNum == 2) {
                     g2.setColor(java.awt.Color.BLACK);
-
-                    g2.fillRect(
-                        x,
-                        y,
-                        gp.tileSize,
-                        gp.tileSize
-                    );
-                }
-
-                // ──────────────────────────────────────────────
-                // CAMINO NORMAL
-                // ──────────────────────────────────────────────
-                else{
-
-                    g2.setColor(new java.awt.Color(
-                            10,
-                            10,
-                            10
-                    ));
-
-                    g2.fillRect(
-                        x,
-                        y,
-                        gp.tileSize,
-                        gp.tileSize
-                    );
+                    g2.fillRect(x, y, gp.tileSize, gp.tileSize);
+                } else {
+                    g2.setColor(new java.awt.Color(10, 10, 10));
+                    g2.fillRect(x, y, gp.tileSize, gp.tileSize);
                 }
             }
         }

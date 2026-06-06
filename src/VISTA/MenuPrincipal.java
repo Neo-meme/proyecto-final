@@ -1,5 +1,7 @@
 package src.VISTA;
 
+import javax.imageio.ImageIO;
+import java.awt.Image;
 import javax.swing.*;
 
 import src.CONTROLADOR.controller.ControladorMenu;
@@ -13,7 +15,18 @@ public class MenuPrincipal extends JFrame {
          // Configuraciones de la ventana usando "this" (porque esta clase ya es la ventana) 
         this.setTitle("Strawus"); // Asignamos el título de la ventana superior
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // Para que el programa cierre al darle a la X
-        this.setLocationRelativeTo(null); // Esto centra la ventana en la pantalla del usuario
+        this.setLocationRelativeTo(null); // Esto centra la ventana en la pantalla del usuarioç
+
+        // ── Icono de la ventana ───────────────────────────────────
+        try {
+            Image icono = ImageIO.read(
+                getClass().getResourceAsStream("/resources/cosas/icono.png")
+            );
+            this.setIconImage(icono);
+        } catch (Exception e) {
+            System.out.println("No se pudo cargar el icono");
+        }
+        // ─────────────────────────────────────────────────────────
 
         //Instanciamos el panel 
         PanelPrincipal PanelPrincipal = new PanelPrincipal(Controlador);

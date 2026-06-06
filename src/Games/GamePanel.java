@@ -8,27 +8,27 @@ import src.CONTROLADOR.input.KeyHandler;
 import src.MODELO.object.GestorClasificaciones;
 import src.MODELO.object.Pellet;
 import src.MODELO.tile.TileManager;
-import src.MODELO.entity.TipoPacman;
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Color;
 import javax.swing.JPanel;
+import javax.swing.JButton; 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.util.Random;
 
-
 public class GamePanel extends JPanel implements Runnable {
-
-    // HUD para vida y puntaje 
-    public int vidas = 3;
+    // 1 = jugando, 2 = muerto (espera), 3 = juego terminado, 4 = pausa
+    public int estadoJuego = 1; 
+    public int vidas; 
     private long tiempoInicio = System.currentTimeMillis();
     private int tiempoJugado = 0;
 
     //--------------------- configuracion de pantalla ---------------------
-
-    final int originalTileSize =16;     // 16*16 tamaño base del tile en pixeles 
-    final int scale =2;                // factor de escala
+    final int originalTileSize = 16;     
+    final int scale = 2;                
 
     public final int tileSize = originalTileSize * scale; // 48*48 px por tile
     public final int maxScreenCol = 28; // 28 * 32 = 896px
@@ -38,67 +38,148 @@ public class GamePanel extends JPanel implements Runnable {
     public  final int ScreenHeight = tileSize * maxScreenRow + hudHeight; // 992 + 48 = 1040px
 
     //----------------- poder de ralentizar o acelerar el tiempo
-    public double speedMultiplier = 1.0; // 1.0 = normal, 0.5 = lento, 2.0 = rápido
-    public int cronoTimer = 0;           // cuántos frames dura el efecto
+    public double speedMultiplier = 1.0; 
+    public int cronoTimer = 0;           
+    public int contadorMuertes = 0;
+    
+    // ── VARIABLES PARA COMER FANTASMAS ──
+    public boolean fantasmasVulnerables = false; 
+    public int timerVulnerabilidad = 0;
 
-  
-    //------- funciones para escoger el tipo de pacman 
+    // ── BOTONES DE LA INTERFAZ ──
+    private JButton btnReanudar;
+    private JButton btnReintentar;
+    private JButton btnVolverMenu;
+    private boolean pausaPresionadaPreviamente = false; 
+ 
+    //------- funciones para escoger el tipo de pacman
     public TipoPacman tipoPacman;
-
-
 
     //----------- configuracion del loop -----------
     final int FPS = 60;
     Thread gameThread;
-    public int nivelActual = 1; // para cargar el mapa correcto desde TileManager
-  
-
+    public int nivelActual = 1; 
+ 
     // ------------- input de movimiento -------------
     public KeyHandler keyH      = new KeyHandler();
-    public TileManager tileM    = new TileManager(this);       // 1. primero el mapa
-    public CollisionChecker cManager = new CollisionChecker(this); // 2. luego colisiones
-    public Pacman pacman;      // 3. luego Pac-Man
-
-  
+    public TileManager tileM    = new TileManager(this);
+    public CollisionChecker cManager = new CollisionChecker(this); 
+    public Pacman pacman;      
 
     // ------------- objetos del juego -------------
     public Pellet[] pellets;
     public int pelletCount = 0;
-   
+    public Fantasma[] fantasmas = new Fantasma[3];
 
-    // Arreglo (Array) para almacenar nuestros 3 fantasmas
-    public Fantasma[] fantasmas = new Fantasma[3]; 
-
+    public Pellet cereza = null;
+    private int cerezaTimer    = 0;          // cuenta regresiva para aparecer
+    private int cerezaVisible  = 0;          // cuántos frames permanece visible
+    private final int CEREZA_INTERVALO = 60 * 30; // aparece cada 30 segundos
+    private final int CEREZA_DURACION  = 60 * 10; // visible 10 segundos
 
     //---------------------- constructor ---------------------
     public GamePanel(TipoPacman tipoPacman){
         this.tipoPacman = tipoPacman;
+       
+        // Nuevo: Vidas dependeindo del personaje 
+        switch (tipoPacman) {
+            case CLASICO -> this.vidas = 3;
+            case TANQUE  -> this.vidas = 5; // ← correcto para TANQUE
+            case VELOZ   -> this.vidas = 1;
+            default      -> this.vidas = 3;
+        }
         this.setPreferredSize (new Dimension(ScreenWidth,ScreenHeight));
         this.setBackground(Color.black);
         this.setDoubleBuffered(true);
         this.addKeyListener(keyH);
         this.setFocusable(true);
-        pacman = new Pacman(this, keyH); // aca se escoge el tipo de pacman que se va a jugar
+        
+        // Nuevo: Posiciona botones
+        this.setLayout(null); 
+        configurarBotones();
 
-        setupPellets(); 
+        tileM.cargarTexturaPared(); //luego cargar textura 
+       
+        pacman = new Pacman(this, keyH); 
+        pacman.vidas = this.vidas;
 
-        // Inicializamos los fantasmas asignando colores y posiciones únicas
+        setupPellets();
+        cerezaTimer = CEREZA_INTERVALO;
+
         fantasmas[0] = new Fantasma(this, Color.RED,  tileSize * 12, tileSize * 10);  // Blinky
         fantasmas[1] = new Fantasma(this, Color.PINK, tileSize * 13, tileSize * 10);  // Pinky
         fantasmas[2] = new Fantasma(this, Color.CYAN, tileSize * 14, tileSize * 10);  // Inky
     }
-    
-    //---------------------- objetos del juego ---------------------
 
+    // Nuevo: Botones salir 
+    private void configurarBotones() {
+        //Nuevo: Boton de Reanudar (Solo para Pausa)
+        btnReanudar = new JButton("Reanudar Partida");
+        btnReanudar.setBounds(ScreenWidth / 2 - 120, ScreenHeight / 2, 240, 50);
+        btnReanudar.setFont(new Font("Arial", Font.BOLD, 16));
+        btnReanudar.setFocusable(false); 
+        btnReanudar.setVisible(false);
+        btnReanudar.addActionListener(e -> {
+            estadoJuego = 1;
+            ocultarBotones();
+            this.requestFocus(); 
+        });
+        this.add(btnReanudar);
+
+        // Nuevo: Boton de Reintentar (Solo para Game Over)
+        btnReintentar = new JButton("Reintentar Nivel");
+        btnReintentar.setBounds(ScreenWidth / 2 - 120, ScreenHeight / 2, 240, 50);
+        btnReintentar.setFont(new Font("Arial", Font.BOLD, 16));
+        btnReintentar.setFocusable(false); 
+        btnReintentar.setVisible(false);
+        btnReintentar.addActionListener(e -> reiniciarJuegoCompleto());
+        this.add(btnReintentar);
+
+        //Nuevo: Boton de Volver al Menu Principal (Salir)
+        btnVolverMenu = new JButton("Salir al Menú Principal");
+        btnVolverMenu.setBounds(ScreenWidth / 2 - 120, ScreenHeight / 2 + 70, 240, 50);
+        btnVolverMenu.setFont(new Font("Arial", Font.BOLD, 16));
+        btnVolverMenu.setFocusable(false);
+        btnVolverMenu.setVisible(false);
+        btnVolverMenu.addActionListener(e -> volverAlMenu());
+        this.add(btnVolverMenu);
+    }
+
+    private void ocultarBotones() {
+        btnReanudar.setVisible(false);
+        btnReintentar.setVisible(false);
+        btnVolverMenu.setVisible(false);
+    }
+
+    private void reiniciarJuegoCompleto() {
+        // Restauramos vidas
+        switch (tipoPacman) {
+            case CLASICO -> this.vidas = 3;
+            case TANQUE  -> this.vidas = 5;
+            case VELOZ   -> this.vidas = 1;
+            default      -> this.vidas = 3;
+        }
+        pacman.vidas = this.vidas;
+        pacman.score = 0;
+        tiempoInicio = System.currentTimeMillis();
+        
+        setupPellets();
+        pacman.setDefaultValues();
+        for(Fantasma f : fantasmas) {
+            if(f != null) f.setDefaultValues();
+        }
+        
+        estadoJuego = 1;
+        ocultarBotones();
+        this.requestFocus();
+    }
+   
+    //---------------------- objetos del juego ---------------------
     private int[][] powerPelletPositions = {
-        {1, 2},   // esquina superior izquierda
-        {26, 2},  // esquina superior derecha
-        {1, 15},  // esquina inferior izquierda
-        {26, 15}  // esquina inferior derecha
+        {1, 2},   {26, 2},  {1, 15},  {26, 15}  
     };
 
     private void setupPellets() {
-        // Contar cuántas celdas de suelo hay para crear el arreglo
         int count = 0;
         for (int col = 0; col < maxScreenCol; col++) {
             for (int row = 0; row < maxScreenRow; row++) {
@@ -127,26 +208,85 @@ public class GamePanel extends JPanel implements Runnable {
         return false;
     }
 
+    private void updateCereza() {
+        if (cereza == null || !cereza.visible) {
+            // Contar para la próxima aparición
+            cerezaTimer--;
+            if (cerezaTimer <= 0) {
+                spawnCereza();
+            }
+        } else {
+            // La cereza está visible, contar su duración
+            cerezaVisible--;
+            if (cerezaVisible <= 0) {
+                cereza.visible = false;
+                cerezaTimer = CEREZA_INTERVALO; // resetear para próxima aparición
+            }
+        }
+    }
 
-    //-------------- arranque del hilo del juego --------------
+    private void spawnCereza() {
+        // Buscar una celda de suelo aleatoria
+        Random rand = new Random();
+        int col, row;
+        int intentos = 0;
+
+        do {
+            col = rand.nextInt(maxScreenCol);
+            row = rand.nextInt(maxScreenRow);
+            intentos++;
+        } while (tileM.mapTileNum[col][row] != 0 && intentos < 100);
+
+        if (tileM.mapTileNum[col][row] == 0) {
+            int px = col * tileSize + tileSize / 4;
+            int py = row * tileSize + tileSize / 4;
+            cereza = new Pellet(px, py, tileSize, hudHeight);
+            cerezaVisible = CEREZA_DURACION;
+        }
+    }
+
+    private void checkCerezaCollision() {
+        if (cereza == null || !cereza.visible) return;
+
+        java.awt.Rectangle pacRect = new java.awt.Rectangle(
+            pacman.x + pacman.hitBox.x,
+            pacman.y + pacman.hitBox.y,
+            pacman.hitBox.width,
+            pacman.hitBox.height
+        );
+
+        java.awt.Rectangle cerezaRect = new java.awt.Rectangle(
+            cereza.x, cereza.y, cereza.size, cereza.size
+        );
+
+        if (pacRect.intersects(cerezaRect)) {
+            cereza.visible = false;
+            cerezaTimer = CEREZA_INTERVALO;
+
+            // Efecto cronokinesis
+            pacman.score += 100;
+            Random rand = new Random();
+            if (rand.nextBoolean()) speedMultiplier = 0.4;
+            else                    speedMultiplier = 2.0;
+            cronoTimer = 60 * 8;
+        }
+    }
+
     public void startGameThread(){
         gameThread = new Thread (this);
         gameThread.start();
     }
-  
-
-    //--------------  Game loop (se ejecuta en el hilo) --------------
+ 
     @Override
     public void run() {
-        double drawInterval = 1000000000/FPS; // 0.0166666667 segundos por frame
+        double drawInterval = 1000000000/FPS; 
         double nextDrawTime = System.nanoTime() + drawInterval;
-    
+   
         while (gameThread != null){
-            update();           // 1. actualizar lógica
-            repaint();          // 2. redibujar pantalla
-        
+            update();           
+            repaint();          
+       
             try {
-                // ── Cronokinesis: modificar el intervalo según speedMultiplier ──
                 double intervaloEfectivo = drawInterval / speedMultiplier;
                 double remainingTime = (nextDrawTime - System.nanoTime()) / 1_000_000;
                 if (remainingTime < 0) remainingTime = 0;
@@ -160,66 +300,119 @@ public class GamePanel extends JPanel implements Runnable {
         }
      }
    
-
-    // ── Lógica del juego ─────────────────────
+    // ── Logica juego ─────────────────────
     public void update() {
 
-        // ── Actualizar el tiempo jugado  ─────────────────────────────────────
-        tiempoJugado =(int)((System.currentTimeMillis() - tiempoInicio)/1000);
-
-        // ── Cronokinesis timer ─────────────────────────────────────
-        if (cronoTimer > 0) {
-            cronoTimer--;
-            if (cronoTimer == 0) {
-                speedMultiplier = 1.0; // restaurar velocidad normal
+        // Nuevo: Logica pausar
+        if (keyH.pausePressed && !pausaPresionadaPreviamente) {
+            if (estadoJuego == 1) {
+                estadoJuego = 4; // Entrar en pausa
+                btnReanudar.setVisible(true);
+                btnVolverMenu.setVisible(true);
+            } else if (estadoJuego == 4) {
+                estadoJuego = 1; // Salir de pausa
+                ocultarBotones();
             }
         }
-        pacman.update(); // actualizar la lógica
+        pausaPresionadaPreviamente = keyH.pausePressed;
 
-        // Actualizamos cada fantasma en el arreglo
-        for (Fantasma f : fantasmas) {
-            f.update(); 
-        }
-        checkPelletCollision();
+        if(estadoJuego == 1){
+            pacman.update();
+           
+            for(Fantasma f : fantasmas){
+                if(f != null) f.update();
+            }
+
+            for (Fantasma f : fantasmas){
+                if(f != null){
+                    boolean choqueFantasma = cManager.checkEntityCollision(pacman, f);
+
+                    if(choqueFantasma){
+                        // Nuevo: Logica comer fantasmas
+                        if (fantasmasVulnerables) {
+                            pacman.score += 200; // Come al fantasma
+                            f.setDefaultValues(); // Lo manda a la caja
+                        } else {
+                            vidas--; 
+                            pacman.vidas = vidas;
+                               
+                            if (vidas <= 0){
+                                estadoJuego = 3; // Game Over
+                                guardarClasificacion(); 
+                                
+                                // Mostrar botones de Game Over
+                                btnReintentar.setVisible(true);
+                                btnVolverMenu.setVisible(true);
+                            } else {
+                                estadoJuego = 2; // Pausa temporal por muerte
+                                contadorMuertes = 60 ;   
+                            }
+                            break; 
+                        }
+                    }
+                }
+            }
+
+            tiempoJugado =(int)((System.currentTimeMillis() - tiempoInicio)/1000);
+
+            if (cronoTimer > 0) {
+                cronoTimer--;
+                if (cronoTimer == 0) speedMultiplier = 1.0; 
+            }
+
+            // Nuevo: TIEMPO de que el pacman se puede comer los fantasmas
+            if (timerVulnerabilidad > 0) {
+                timerVulnerabilidad--;
+                if (timerVulnerabilidad == 0) {
+                    fantasmasVulnerables = false; // Vuelven a ser mortales
+                }
+            }
+
+            updateCereza();        
+            checkCerezaCollision();
+            checkPelletCollision();
+
+        } else if (estadoJuego == 2) {
+            contadorMuertes--;
+            if (contadorMuertes <= 0) {
+                pacman.setDefaultValues();
+                for(Fantasma f : fantasmas){
+                    if(f != null) f.setDefaultValues();
+                }
+                estadoJuego = 1; 
+            }
+        } 
     }
 
     private void checkPelletCollision() {
+        Rectangle pacRect = new Rectangle(
+            pacman.x + pacman.hitBox.x, 
+            pacman.y + pacman.hitBox.y, 
+            pacman.hitBox.width, 
+            pacman.hitBox.height
+        );
+
         for (Pellet pellet : pellets) {
             if (pellet.visible) {
-                // centro de Pac-Man
-                int pacCenterX = pacman.x + tileSize / 2;
-                int pacCenterY = pacman.y + tileSize / 2;
+                // Creamos un rectángulo para la bolita
+                Rectangle pelletRect = new Rectangle(pellet.x, pellet.y, pellet.size, pellet.size);
 
-                // distancia entre centros
-                int pelletCenterX = pellet.x + pellet.size / 2; // corrección: agregar getter o hacer size public
-                int pelletCenterY = pellet.y + pellet.size / 2;
-
-                int dist = (int) Math.sqrt(
-                    Math.pow(pacCenterX - pelletCenterX, 2) +
-                    Math.pow(pacCenterY - pelletCenterY, 2)
-                );
-
-                if (dist < tileSize / 2) {
-                pellet.visible = false;
+                // Comerse la bolita
+                if (pacRect.intersects(pelletRect)) {
+                    pellet.visible = false;
 
                     if (pellet.isPower) {
-                        // ── Cronokinesis: efecto aleatorio ─────────────
-                        pacman.score += 50; // vale más puntos
-                        Random rand = new Random();
-                        if (rand.nextBoolean()) {
-                            speedMultiplier = 0.4; // ralentizar todo
-                        } else {
-                            speedMultiplier = 2.0; // acelerar todo
-                        }
-                            cronoTimer = 60 * 8 ; // dura 8 segundos
-                        } else {
-                            pacman.score += 10; // pellet normal
-                        }
+                        // Nuevo: Activa comer fantasmas
+                        fantasmasVulnerables = true;
+                        timerVulnerabilidad = 60 * 8; 
+                        pacman.score += 50;
+                    } else {
+                        pacman.score += 10; 
+                    }
                 }
             }
         }
 
-        // verificar si todos los pellets fueron consumidos
         boolean todosComidos = true;
         for (Pellet pellet : pellets) {
             if (pellet.visible) {
@@ -227,17 +420,11 @@ public class GamePanel extends JPanel implements Runnable {
                 break;
             }
         }
-        if (todosComidos) {
-            cargarSiguienteNivel();
-        }
+        if (todosComidos) cargarSiguienteNivel();
     }
 
-    // guardado de clasificaciones
     private void guardarClasificacion(){
-        GestorClasificaciones.guardarResultado(
-            pacman.score,
-            tiempoJugado
-        );
+        GestorClasificaciones.guardarResultado(pacman.score, tiempoJugado);
     }
 
     // ── Renderizado ───────────────────────────────────────────────
@@ -245,115 +432,104 @@ public class GamePanel extends JPanel implements Runnable {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2 = (Graphics2D) g;
-        drawHUD(g2); // dibujar el HUD antes del mapa
+        drawHUD(g2);
 
-        tileM.draw(g2); // dibujar el mapa
+        tileM.draw(g2);
 
-        // dibujar pellets
         for (Pellet pellet : pellets) {
             pellet.draw(g2);
         }
 
-        pacman.draw(g2); // dibujar a Pacman
-
-        // dibujar cada fantasma en el arreglo
-        for (Fantasma f : fantasmas) {
-            f.draw(g2); // 4. Enemigos
+        if (cereza != null && cereza.visible) {
+            cereza.draw(g2);
         }
 
-        g2.dispose(); // libera recursos del objeto gráfico
+        pacman.draw(g2);
+
+        for (Fantasma f : fantasmas) {
+            if (f != null) f.draw(g2);
+        }
+
+        if(estadoJuego == 3){ // GAME OVER
+            g2.setColor(new Color(0,0,0,200));
+            g2.fillRect(0,0,ScreenWidth,ScreenHeight);
+
+            g2.setColor(Color.RED);
+            g2.setFont(new Font("Arial", Font.BOLD, 80));
+            String text = "Game Over";
+
+            int x = (ScreenWidth - g2.getFontMetrics().stringWidth(text))/2;
+            int y = ScreenHeight / 2 - 50; 
+            g2.drawString(text, x, y);
+            
+        } else if (estadoJuego == 4) { // PAUSA
+            g2.setColor(new Color(0,0,0,200));
+            g2.fillRect(0,0,ScreenWidth,ScreenHeight);
+
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Arial", Font.BOLD, 80));
+            String text = "PAUSA";
+
+            int x = (ScreenWidth - g2.getFontMetrics().stringWidth(text))/2;
+            int y = ScreenHeight / 2 - 50;
+            g2.drawString(text, x, y);
+        }
+       
     }
 
-    // IMPORTANTE ESTO SOLO ES DE PRUEBA . ACA SE CARGA EL NIVEL Y SE TERMINA PARA PROBRAR LAS CALIFICACIONES 
     private void cargarSiguienteNivel() {
-
         if (nivelActual == 1) {
-
             nivelActual = 2;
             tileM.loadMap("nivel2.txt");
+            tileM.cargarTexturaPared(); // ← recargar textura del nivel 2
             setupPellets();
             pacman.setDefaultValues();
-
+            for(Fantasma f : fantasmas) {
+                if(f != null) f.setDefaultValues();
+            }
         } else {
-
-            System.out.println("¡Juego terminado!");
-
             guardarClasificacion();
-
-            gameThread = null;
-
-            volverAlMenu();
+            estadoJuego = 3; 
+            btnReintentar.setVisible(true);
+            btnVolverMenu.setVisible(true);
         }
     }
 
     private void volverAlMenu() {
-
+        gameThread = null; 
+        
         javax.swing.SwingUtilities.invokeLater(() -> {
-
             java.awt.Window ventana =
                 javax.swing.SwingUtilities.getWindowAncestor(this);
 
             if (ventana instanceof src.VISTA.MenuPrincipal menu) {
-
                 src.CONTROLADOR.controller.ControladorMenu controlador =
                         new src.CONTROLADOR.controller.ControladorMenu();
-
                 src.VISTA.PanelPrincipal panel =
                         new src.VISTA.PanelPrincipal(controlador);
 
                 controlador.setVistaPrincipal(menu);
-
                 menu.CambiarPantalla(panel);
             }
         });
     }
 
-    // DESPUES DE DEBE ELIMINAR ALAN PARA CONFIGUAR BIEN CUANDOS SE MUERE EL PACMAN 
-    // IMPORTANTE ESTO SOLO ES DE PRUEBA . ACA SE CARGA EL NIVEL Y SE TERMINA PARA PROBRAR LAS CALIFICACIONES 
-
-
     private void drawHUD(Graphics2D g2){
-
         g2.setColor(Color.BLACK);
         g2.fillRect(0, 0, ScreenWidth, hudHeight);
 
         g2.setColor(Color.YELLOW);
+        g2.drawString("Puntos: " + pacman.score, 20, 20);
+        int minutos  = tiempoJugado / 60;
+        int segundos = tiempoJugado % 60;
+        g2.drawString("Tiempo: " + minutos + ":" + String.format("%02d", segundos), 250, 20);
+        g2.drawString("Vidas: ", 450, 20);
 
-        g2.drawString(
-            "Puntos: " + pacman.score,
-            20,
-            20
-        );
-
-        g2.drawString(
-            "Tiempo: " + tiempoJugado + "s",
-            250,
-            20
-        );
-
-        g2.drawString(
-            "Vidas: ",
-            450,
-            20
-        );
-
-        for(int i = 0; i < pacman.vidas; i++){
-
+        for(int i = 0; i < vidas; i++){
             g2.setColor(pacman.colorPacman);
-
-            g2.fillOval(
-                510 + (i * 20),
-                8,
-                14,
-                14
-            );
+            g2.fillOval(510 + (i * 20), 8, 14, 14);
         }
 
-        g2.drawString(
-            "Tipo: " + tipoPacman,
-            650,
-            20
-        );
-    }   
+        g2.drawString("Tipo: " + tipoPacman, 650, 20);
+    }  
 }
-
