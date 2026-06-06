@@ -1,6 +1,6 @@
 package src.MODELO.entity;
 
-import src.GAMES.GamePanel;
+import src.Games.GamePanel;
 
 import java.awt.Graphics2D;
 import java.awt.Color;

@@ -1,7 +1,8 @@
 package src.MODELO.collision;
 
 import src.MODELO.entity.Entity;
-import src.GAMES.GamePanel;
+import src.Games.GamePanel;
+
 import java.awt.Rectangle;
 
 public class CollisionChecker{

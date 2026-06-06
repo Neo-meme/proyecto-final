@@ -15,8 +15,11 @@ public class Pellet {
     public int size;
 
     // ── poderes pa el pacman  ─────────────────────────────────────────────
+
     public boolean isPower;   // pellet naranja — comer fantasmas
     public boolean isCereza;  // cereza — cronokinesis
+
+
 
     // ── Constructor ───────────────────────────────────────────────
     public Pellet(int col, int row, int tileSize, int hudHeight, boolean isPower) {
@@ -45,6 +48,7 @@ public class Pellet {
     
     // ── Dibujo ────────────────────────────────────────────────────
     public void draw(Graphics2D g2) {
+
         if (!visible) return;
 
         if (isCereza) {
@@ -56,6 +60,7 @@ public class Pellet {
         } else {
             // Pellet normal blanco
             g2.setColor(Color.WHITE);
+
             g2.fillOval(x, y + hudOffset, size, size);
         }
     }
