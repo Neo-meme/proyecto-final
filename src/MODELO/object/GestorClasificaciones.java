@@ -1,4 +1,4 @@
-package src.MODELO.object;
+package MODELO.object;
 
 import java.io.*;
 import java.util.*;

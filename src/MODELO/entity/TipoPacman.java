@@ -1,4 +1,4 @@
-package src.MODELO.entity;
+package MODELO.entity;
 
 public enum TipoPacman {
 

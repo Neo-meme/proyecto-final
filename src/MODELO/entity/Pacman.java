@@ -1,7 +1,7 @@
-package src.MODELO.entity;
+package MODELO.entity;
 
-import src.CONTROLADOR.input.KeyHandler;
-import src.Games.GamePanel;
+import CONTROLADOR.input.KeyHandler;
+import Games.GamePanel;
 
 import java.awt.Graphics2D;
 import java.awt.Color;

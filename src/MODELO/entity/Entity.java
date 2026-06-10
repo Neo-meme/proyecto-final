@@ -1,4 +1,4 @@
-package src.MODELO.entity;
+package MODELO.entity;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;

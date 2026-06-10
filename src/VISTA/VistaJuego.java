@@ -1,11 +1,11 @@
-package src.VISTA;
+package VISTA;
 
 import javax.swing.*;
-import src.Games.GamePanel;
+import Games.GamePanel;
 import java.awt.*;
 
-import src.MODELO.entity.TipoPacman;
-import src.CONTROLADOR.controller.ControladorJuego;
+import MODELO.entity.TipoPacman;
+import CONTROLADOR.controller.ControladorJuego;
 
 public class VistaJuego extends JPanel {
 

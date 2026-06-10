@@ -1,13 +1,13 @@
-package src.CONTROLADOR.controller;
+package CONTROLADOR.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.SwingUtilities;
 
-import src.VISTA.MenuPrincipal;
-import src.VISTA.PanelPrincipal;
-import src.VISTA.VistaJuego;
-import src.MODELO.entity.TipoPacman;
+import VISTA.MenuPrincipal;
+import VISTA.PanelPrincipal;
+import VISTA.VistaJuego;
+import MODELO.entity.TipoPacman;
 
 public class ControladorJuego implements ActionListener{
         private MenuPrincipal ventanaPrincipal ;

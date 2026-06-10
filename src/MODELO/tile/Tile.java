@@ -1,4 +1,4 @@
-package src.MODELO.tile;
+package MODELO.tile;
 
 import java.awt.image.BufferedImage;
 

@@ -1,13 +1,13 @@
-package src.Games;
+package Games;
 
-import src.MODELO.collision.CollisionChecker;
-import src.MODELO.entity.Fantasma;
-import src.MODELO.entity.Pacman;
-import src.MODELO.entity.TipoPacman;
-import src.CONTROLADOR.input.KeyHandler;
-import src.MODELO.object.GestorClasificaciones;
-import src.MODELO.object.Pellet;
-import src.MODELO.tile.TileManager;
+import MODELO.collision.CollisionChecker;
+import MODELO.entity.Fantasma;
+import MODELO.entity.Pacman;
+import MODELO.entity.TipoPacman;
+import CONTROLADOR.input.KeyHandler;
+import MODELO.object.GestorClasificaciones;
+import MODELO.object.Pellet;
+import MODELO.tile.TileManager;
 
 import java.awt.Dimension;
 import java.awt.Font;
@@ -21,7 +21,7 @@ import java.util.Random;
 
 public class GamePanel extends JPanel implements Runnable {
 
-    // 1 = jugando, 2 = muerto (espera), 3 = juego terminado, 4 = pausa
+    // 1 = jugando, 2 = muerto (espera), 3 = juego terminado, 4 = pausa, 5 = victoria
     public int estadoJuego = 1;
     public int vidas;
     private long tiempoInicio = System.currentTimeMillis();
@@ -85,7 +85,7 @@ public class GamePanel extends JPanel implements Runnable {
         // ── vidas según tipo ──────────────────────────────────────
         switch (tipoPacman) {
             case CLASICO -> this.vidas = 3;
-            case TANQUE  -> this.vidas = 5; // ← corregido
+            case TANQUE  -> this.vidas = 5;
             case VELOZ   -> this.vidas = 1;
             default      -> this.vidas = 3;
         }
@@ -153,7 +153,7 @@ public class GamePanel extends JPanel implements Runnable {
         // ── vidas según tipo ──────────────────────────────────────
         switch (tipoPacman) {
             case CLASICO -> this.vidas = 3;
-            case TANQUE  -> this.vidas = 5; // ← corregido
+            case TANQUE  -> this.vidas = 5;
             case VELOZ   -> this.vidas = 1;
             default      -> this.vidas = 3;
         }
@@ -455,6 +455,26 @@ public class GamePanel extends JPanel implements Runnable {
             int x = (ScreenWidth - g2.getFontMetrics().stringWidth(text)) / 2;
             int y = ScreenHeight / 2 - 50;
             g2.drawString(text, x, y);
+            
+        // NUEVO: PANTALLA DE VICTORIA
+        } else if (estadoJuego == 5) { 
+            g2.setColor(new Color(0, 0, 0, 200));
+            g2.fillRect(0, 0, ScreenWidth, ScreenHeight);
+            
+            // Texto principal de victoria
+            g2.setColor(Color.YELLOW);
+            g2.setFont(new Font("Arial", Font.BOLD, 80));
+            String text = "¡Buen juego!";
+            int x = (ScreenWidth - g2.getFontMetrics().stringWidth(text)) / 2;
+            int y = ScreenHeight / 2 - 50;
+            g2.drawString(text, x, y);
+            
+            // Mostrarle su puntuación final debajo
+            g2.setColor(Color.WHITE);
+            g2.setFont(new Font("Arial", Font.PLAIN, 40));
+            String scoreText = "Puntuación Final: " + pacman.score;
+            int scoreX = (ScreenWidth - g2.getFontMetrics().stringWidth(scoreText)) / 2;
+            g2.drawString(scoreText, scoreX, y + 60);
         }
     }
 
@@ -472,10 +492,11 @@ public class GamePanel extends JPanel implements Runnable {
                 if (f != null) f.setDefaultValues();
             }
         } else {
+            // ¡GANÓ EL JUEGO! (Pasó el nivel 2)
             guardarClasificacion();
-            estadoJuego = 3;
-            btnReintentar.setVisible(true);
-            btnVolverMenu.setVisible(true);
+            estadoJuego = 5; // 5 = Estado de Victoria
+            btnReintentar.setVisible(false); // Ocultamos el botón de reintentar
+            btnVolverMenu.setVisible(true);  // Solo mostramos el de volver al menú
         }
     }
 
@@ -487,11 +508,11 @@ public class GamePanel extends JPanel implements Runnable {
             java.awt.Window ventana =
                 javax.swing.SwingUtilities.getWindowAncestor(this);
 
-            if (ventana instanceof src.VISTA.MenuPrincipal menu) {
-                src.CONTROLADOR.controller.ControladorMenu controlador =
-                    new src.CONTROLADOR.controller.ControladorMenu();
-                src.VISTA.PanelPrincipal panel =
-                    new src.VISTA.PanelPrincipal(controlador);
+            if (ventana instanceof VISTA.MenuPrincipal menu) {
+                CONTROLADOR.controller.ControladorMenu controlador =
+                    new CONTROLADOR.controller.ControladorMenu();
+                VISTA.PanelPrincipal panel =
+                    new VISTA.PanelPrincipal(controlador);
 
                 controlador.setVistaPrincipal(menu);
                 menu.CambiarPantalla(panel);

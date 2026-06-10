@@ -1,9 +1,9 @@
-package src.VISTA;
+package VISTA;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
-import src.CONTROLADOR.controller.ControladorJuego;
+import CONTROLADOR.controller.ControladorJuego;
 
 import java.awt.*;
 

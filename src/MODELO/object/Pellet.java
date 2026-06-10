@@ -1,4 +1,4 @@
-package src.MODELO.object;
+package MODELO.object;
 
 import java.awt.Color;
 import java.awt.Graphics2D;

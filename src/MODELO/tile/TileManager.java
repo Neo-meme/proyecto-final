@@ -1,13 +1,10 @@
-package src.MODELO.tile;
+package MODELO.tile;
 
-import src.Games.GamePanel;
+import Games.GamePanel;
+import VISTA.ResourceManager;
 
-import javax.imageio.ImageIO;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
-//import java.io.IOException;
-//import java.io.InputStream;
-//import java.io.InputStreamReader;
 
 public class TileManager {
 
@@ -51,10 +48,13 @@ public class TileManager {
         try {
             String nivel  = "nivel " + gp.nivelActual;
             String tipo  = gp.tipoPacman.toString().toUpperCase();// "clasico", "tanque", "veloz"
-            String ruta   = "/resources/" + nivel + "/" + tipo + ".png";
-            wallTexture = ImageIO.read(getClass().getResourceAsStream(ruta));
+            String rutaRelativa = nivel + "/" + tipo + ".png";
+            wallTexture = ResourceManager.loadImage(rutaRelativa);
             tileSet[1].image = wallTexture;
 
+            if (wallTexture == null) {
+                System.out.println("Error: No se pudo cargar textura del nivel: " + rutaRelativa);
+            }
         } catch (Exception e) {
             System.out.println("Error cargando textura: " + e.getMessage());
             wallTexture = null;

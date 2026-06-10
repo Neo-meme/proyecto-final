@@ -1,11 +1,11 @@
-package src.VISTA;
+package VISTA;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
 
-import src.CONTROLADOR.controller.ControladorMenu;
+import CONTROLADOR.controller.ControladorMenu;
 
 public class VistaClasificaciones extends JPanel {
 

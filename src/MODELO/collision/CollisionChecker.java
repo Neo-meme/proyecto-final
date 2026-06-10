@@ -1,7 +1,7 @@
-package src.MODELO.collision;
+package MODELO.collision;
 
-import src.MODELO.entity.Entity;
-import src.Games.GamePanel;
+import MODELO.entity.Entity;
+import Games.GamePanel;
 
 import java.awt.Rectangle;
 

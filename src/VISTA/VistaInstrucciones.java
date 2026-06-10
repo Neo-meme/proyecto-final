@@ -1,11 +1,10 @@
-package src.VISTA;
+package VISTA;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
 
-import src.CONTROLADOR.controller.ControladorMenu;
+import CONTROLADOR.controller.ControladorMenu;
 
 public class VistaInstrucciones extends JPanel {
 
@@ -17,12 +16,9 @@ public class VistaInstrucciones extends JPanel {
         this.setLayout(new BorderLayout());
 
         // Cargar imagen
-        try {
-            imagenInstrucciones = ImageIO.read(
-                getClass().getResourceAsStream("/resources/cosas/instrucciones.png")
-            );
-        } catch (Exception e) {
-            System.out.println("No se pudo cargar instrucciones.png");
+        imagenInstrucciones = ResourceManager.loadImage("cosas/instrucciones.png");
+        if (imagenInstrucciones == null) {
+            System.out.println("Error: No se pudo cargar instrucciones.png");
         }
 
         // Panel para la imagen

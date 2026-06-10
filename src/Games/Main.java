@@ -1,6 +1,6 @@
-package src.Games;
-import src.CONTROLADOR.controller.ControladorMenu;
-import src.VISTA.MenuPrincipal;
+package Games;
+import CONTROLADOR.controller.ControladorMenu;
+import VISTA.MenuPrincipal;
 
 public class Main {
     public static void main(String[] args) {

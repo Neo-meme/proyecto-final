@@ -1,28 +1,29 @@
-package src.CONTROLADOR.controller;
+package CONTROLADOR.controller;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import src.VISTA.MenuPrincipal;
-import src.VISTA.PanelPrincipal;
-import src.VISTA.VistaClasificaciones;
-import src.VISTA.VistaInstrucciones;
-import src.VISTA.VistaSeleccionPersonaje;
+import VISTA.MenuPrincipal;
+import VISTA.PanelPrincipal;
+import VISTA.VistaClasificaciones;
+import VISTA.VistaInstrucciones;
+import VISTA.VistaSeleccionPersonaje;
 
 // Al implementar ActionListener, esta clase esta obligada a tener un metodo para responder a los clics
 public class ControladorMenu implements ActionListener {
 
-           //Creamos un atributo para conectar el controlador y las vistas del juego 
-            private MenuPrincipal vistaPrincipal ;
-            // Creamos el constructor
-            public ControladorMenu(){
-                // Aquí podríamos hacer algo con el controlador del juego si es necesario
-            }
-             // Este es el metodo que se activa cuando el usuario hace clic en un botón
+    // Creamos un atributo para conectar el controlador y las vistas del juego 
+    private MenuPrincipal vistaPrincipal;
 
-            public void setVistaPrincipal(MenuPrincipal vistaPrincipal) {
-                this.vistaPrincipal = vistaPrincipal;
-            }
+    // Creamos el constructor
+    public ControladorMenu() {
+        // Aquí podríamos hacer algo con el controlador del juego si es necesario
+    }
+
+    // Este es el metodo que se activa cuando el usuario hace clic en un botón
+    public void setVistaPrincipal(MenuPrincipal vistaPrincipal) {
+        this.vistaPrincipal = vistaPrincipal;
+    }
 
 
 

@@ -1,10 +1,9 @@
-package src.VISTA;
+package VISTA;
 
-import javax.imageio.ImageIO;
 import java.awt.Image;
 import javax.swing.*;
 
-import src.CONTROLADOR.controller.ControladorMenu;
+import CONTROLADOR.controller.ControladorMenu;
 
 // Heredamos de JFrame para crear nuestra ventana principal del menú
 public class MenuPrincipal extends JFrame {
@@ -19,12 +18,12 @@ public class MenuPrincipal extends JFrame {
 
         // ── Icono de la ventana ───────────────────────────────────
         try {
-            Image icono = ImageIO.read(
-                getClass().getResourceAsStream("/resources/cosas/icono.png")
-            );
-            this.setIconImage(icono);
+            Image icono = ResourceManager.loadImage("cosas/icono.png");
+            if (icono != null) {
+                this.setIconImage(icono);
+            }
         } catch (Exception e) {
-            System.out.println("No se pudo cargar el icono");
+            System.out.println("No se pudo cargar el icono: " + e.getMessage());
         }
         // ─────────────────────────────────────────────────────────
 
