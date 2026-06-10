@@ -114,6 +114,7 @@ Contiene todas las interfaces gráficas:
 
 - MenuPrincipal
 - PanelPrincipal
+- ResourcesManager
 - VistaJuego
 - VistaClasificaciones
 - VistaInstrucciones
