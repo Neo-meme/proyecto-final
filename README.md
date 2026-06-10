@@ -36,21 +36,61 @@ El proyecto incorpora características adicionales como:
 # 🏗️ Arquitectura del Proyecto
 
 ```text
-src
+📦 Proyecto Strawus
+├── 📁 resources
+│   ├── 📁 cosas
+│   │   ├── 🖼️ icono.png
+│   │   ├── 🖼️ instrucciones.png
+│   │   ├── 📄 README.md
+│   │   └── 🖼️ titulo.png
+│   ├── 📁 nivel 1
+│   │   ├── 🖼️ CLASICO.png
+│   │   ├── 🖼️ tanque.png
+│   │   └── 🖼️ veloz.png
+│   ├── 📁 nivel 2
+│   │   ├── 🖼️ CLASICO.png
+│   │   ├── 🖼️ tanque.png
+│   │   └── 🖼️ veloz.png
+│   └── 📄 IMAGENES_REQUERIDAS.txt
 │
-├── CONTROLADOR
-│   ├── controller
-│   └── input
+├── 📁 src
+│   ├── 📁 CONTROLADOR
+│   │   ├── 📁 controller
+│   │   │   ├── ☕ ControladorJuego.java
+│   │   │   └── ☕ ControladorMenu.java
+│   │   └── 📁 input
+│   │       └── ☕ KeyHandler.java
+│   │
+│   ├── 📁 Games
+│   │   ├── ☕ GamePanel.java
+│   │   └── ☕ Main.java
+│   │
+│   ├── 📁 MODELO
+│   │   ├── 📁 collision
+│   │   │   └── ☕ CollisionChecker.java
+│   │   ├── 📁 entity
+│   │   │   ├── ☕ Entity.java
+│   │   │   ├── ☕ Fantasma.java
+│   │   │   ├── ☕ Pacman.java
+│   │   │   └── ☕ TipoPacman.java
+│   │   ├── 📁 object
+│   │   │   ├── ☕ GestorClasificaciones.java
+│   │   │   └── ☕ Pellet.java
+│   │   └── 📁 tile
+│   │       ├── ☕ Tile.java
+│   │       └── ☕ TileManager.java
+│   │
+│   └── 📁 VISTA
+│       ├── ☕ MenuPrincipal.java
+│       ├── ☕ PanelPrincipal.java
+│       ├── ☕ ResourceManager.java
+│       ├── ☕ VistaClasificaciones.java
+│       ├── ☕ VistaInstrucciones.java
+│       ├── ☕ VistaJuego.java
+│       └── ☕ VistaSeleccionPersonaje.java
 │
-├── MODELO
-│   ├── collision
-│   ├── entity
-│   ├── object
-│   └── tile
-│
-├── VISTA
-│
-└── Games
+├── 📄 clasificaciones.txt
+└── 📄 README.md
 ```
 
 ---
